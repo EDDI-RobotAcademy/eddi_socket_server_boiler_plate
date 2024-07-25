@@ -27,7 +27,7 @@ class ServerSocketRepositoryImpl(ServerSocketRepository):
 
     def create(self):
         socketObject = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__serverSocket = ServerSocket(config('TARGET_HOST'), int(config('TARGET_PORT')), socketObject)
+        self.__serverSocket = ServerSocket(config('HOST'), int(config('PORT')), socketObject)
         return self.__serverSocket
 
     def getServerSocket(self):
