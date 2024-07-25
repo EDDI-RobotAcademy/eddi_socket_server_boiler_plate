@@ -20,12 +20,16 @@ if __name__ == '__main__':
 
     socketAcceptService = SocketAcceptServiceImpl.getInstance()
     socketAcceptService.requestToInjectServerSocket(serverSocket)
+    ColorPrinter.print_important_message("Success to inject server socket to acceptor")
+
+    taskWorkerService = TaskWorkerServiceImpl.getInstance()
+    taskWorkerService.createTaskWorker("Acceptor", socketAcceptService.requestToAcceptClient)
+    taskWorkerService.executeTaskWorker("Acceptor")
 
     # transmitterController = TransmitterControllerImpl.getInstance()
     # transmitterController.requestToInjectSocketClient(clientSocket)
 
-    taskWorkerService = TaskWorkerServiceImpl.getInstance()
-    ColorPrinter.print_important_message("Success to create Task Manager")
+
     # taskWorkerService.createTaskWorker("Transmitter", )
     # server = SocketServer('0.0.0.0', )
     # server.start()
