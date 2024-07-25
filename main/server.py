@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     serverSocketService = ServerSocketServiceImpl.getInstance()
     serverSocket = serverSocketService.createServerSocket()
-    serverSocketService.startServerSocket()
+    serverSocketService.prepareServerSocket()
     ColorPrinter.print_important_message("Success to create Server Socket")
 
     taskWorkerService = TaskWorkerServiceImpl.getInstance()
