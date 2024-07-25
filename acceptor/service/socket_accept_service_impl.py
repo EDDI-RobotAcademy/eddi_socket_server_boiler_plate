@@ -1,3 +1,4 @@
+from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
 from acceptor.service.socket_accept_service import SocketAcceptService
 
 
@@ -18,6 +19,9 @@ class SocketAcceptServiceImpl(SocketAcceptService):
 
         return cls.__instance
 
-    def requestToInjectSocketServer(self, serverSocket):
+    def requestToInjectServerSocket(self, serverSocket):
         self.__socketAcceptRepository.injectSocketServer(serverSocket)
+
+    def requestToAcceptClient(self):
+        self.__socketAcceptRepository.acceptClient()
     
