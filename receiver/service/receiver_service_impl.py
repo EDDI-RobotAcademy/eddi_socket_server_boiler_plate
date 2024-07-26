@@ -44,8 +44,8 @@ class ReceiverServiceImpl(ReceiverService):
 
         self.__receiverRepository.injectClientSocket(clientSocket)
 
-    def requestToInjectAcceptChannel(self, ipcAcceptorChannel):
-        self.__receiverRepository.injectAcceptChannel(ipcAcceptorChannel)
+    def requestToInjectAcceptorReceiverChannel(self, ipcAcceptorReceiverChannel):
+        self.__receiverRepository.injectAcceptorReceiverChannel(ipcAcceptorReceiverChannel)
 
     def requestToReceiveClient(self):
         clientSocket = self.__receiverRepository.getClientSocket()

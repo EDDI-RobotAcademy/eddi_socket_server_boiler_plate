@@ -24,26 +24,26 @@ class DomainInitializer:
     @staticmethod
     def initSocketAcceptDomain():
         ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
-        ipcAcceptorChannel = ipcQueueRepository.getIPCAcceptorChannel()
+        ipcAcceptorReceiverChannel = ipcQueueRepository.getIPCAcceptorReceiverChannel()
 
         socketAcceptService = SocketAcceptServiceImpl.getInstance()
-        socketAcceptService.requestToInjectAcceptChannel(ipcAcceptorChannel)
+        socketAcceptService.requestToInjectAcceptorReceiverChannel(ipcAcceptorReceiverChannel)
 
     @staticmethod
     def initReceiverDomain():
         ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
-        ipcAcceptorChannel = ipcQueueRepository.getIPCAcceptorChannel()
+        ipcAcceptorReceiverChannel = ipcQueueRepository.getIPCAcceptorReceiverChannel()
 
         receiverService = ReceiverServiceImpl.getInstance()
-        receiverService.requestToInjectAcceptChannel(ipcAcceptorChannel)
+        receiverService.requestToInjectAcceptorReceiverChannel(ipcAcceptorReceiverChannel)
 
-    @staticmethod
-    def initTransmitterDomain():
-        ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
-        ipcAcceptorChannel = ipcQueueRepository.getIPCAcceptorChannel()
-
-        transmitterService = TransmitterServiceImpl.getInstance()
-        transmitterService.requestToInjectAcceptChannel(ipcAcceptorChannel)
+    # @staticmethod
+    # def initTransmitterDomain():
+    #     ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
+    #     ipcAcceptorChannel = ipcQueueRepository.getIPCAcceptorChannel()
+    #
+    #     transmitterService = TransmitterServiceImpl.getInstance()
+    #     transmitterService.requestToInjectAcceptChannel(ipcAcceptorChannel)
 
     @staticmethod
     def initEachDomain():
@@ -52,5 +52,5 @@ class DomainInitializer:
         DomainInitializer.initServerSocketDomain()
         DomainInitializer.initSocketAcceptDomain()
         DomainInitializer.initReceiverDomain()
-        DomainInitializer.initTransmitterDomain()
+        # DomainInitializer.initTransmitterDomain()
 

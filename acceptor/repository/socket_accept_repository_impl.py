@@ -13,7 +13,7 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
     __serverSocket = None
     __clientSocket = None
 
-    __ipcAcceptorChannel = None
+    __ipcAcceptorReceiverChannel = None
 
     def __new__(cls):
         if cls.__instance is None:
@@ -41,8 +41,8 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
     def injectSocketServer(self, serverSocket):
         self.__serverSocket = serverSocket
 
-    def injectAcceptChannel(self, ipcAcceptorChannel):
-        self.__ipcAcceptorChannel = ipcAcceptorChannel
+    def injectAcceptorReceiverChannel(self, ipcAcceptorReceiverChannel):
+        self.__ipcAcceptorReceiverChannel = ipcAcceptorReceiverChannel
 
     def acceptClient(self):
         serverSocketObject = self.__serverSocket.getServerSocket()

@@ -6,7 +6,8 @@ from ipc_queue.repository.ipc_queue_repository import IPCQueueRepository
 class IPCQueueRepositoryImpl(IPCQueueRepository):
     __instance = None
 
-    __ipcAcceptorChannel = None
+    __ipcAcceptorReceiverChannel = None
+    __ipcAcceptorTransmitterChannel = None
 
     def __new__(cls):
         if cls.__instance is None:
@@ -21,9 +22,13 @@ class IPCQueueRepositoryImpl(IPCQueueRepository):
 
         return cls.__instance
 
-    def getIPCAcceptorChannel(self):
-        return self.__ipcAcceptorChannel
+    def getIPCAcceptorReceiverChannel(self):
+        return self.__ipcAcceptorReceiverChannel
+
+    def getIPCAcceptorTransmitterChannel(self):
+        return self.__ipcAcceptorTransmitterChannel
 
     def createDefault(self):
-        self.__ipcAcceptorChannel = multiprocessing.Queue()
+        self.__ipcAcceptorReceiverChannel = multiprocessing.Queue()
+        self.__ipcAcceptorTransmitterChannel = multiprocessing.Queue()
     
