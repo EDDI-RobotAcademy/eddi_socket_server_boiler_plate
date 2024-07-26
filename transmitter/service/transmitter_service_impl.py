@@ -42,3 +42,6 @@ class TransmitterServiceImpl(TransmitterService):
         ColorPrinter.print_important_message("Success to inject client socket to transmitter")
 
         self.__transmitterRepository.injectClientSocket(clientSocket)
+
+    def requestToInjectAcceptChannel(self, ipcAcceptorChannel):
+        self.__transmitterRepository.injectAcceptChannel(ipcAcceptorChannel)
