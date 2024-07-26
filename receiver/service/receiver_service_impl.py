@@ -25,7 +25,7 @@ class ReceiverServiceImpl(ReceiverService):
         return cls.__instance
 
     def validateClientSocket(self):
-        ipcAcceptorChannel = self.__receiverRepository.getIpcAcceptorChannel
+        ipcAcceptorChannel = self.__receiverRepository.getIpcAcceptorChannel()
 
         while True:
             clientSocket = ipcAcceptorChannel.get()
