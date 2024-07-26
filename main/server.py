@@ -6,6 +6,7 @@ from initializer.init_domain import DomainInitializer
 from receiver.service.receiver_service_impl import ReceiverServiceImpl
 from server_socket.service.server_socket_service_impl import ServerSocketServiceImpl
 from task_worker.service.task_worker_service_impl import TaskWorkerServiceImpl
+from transmitter.service.transmitter_service_impl import TransmitterServiceImpl
 from utility.color_print import ColorPrinter
 
 DomainInitializer.initEachDomain()
@@ -33,10 +34,5 @@ if __name__ == '__main__':
     taskWorkerService.createTaskWorker("Receiver", receiverService.requestToReceiveClient)
     taskWorkerService.executeTaskWorker("Receiver")
 
-    # transmitterController = TransmitterControllerImpl.getInstance()
-    # transmitterController.requestToInjectSocketClient(clientSocket)
-
-
-    # taskWorkerService.createTaskWorker("Transmitter", )
-    # server = SocketServer('0.0.0.0', )
-    # server.start()
+    transmitterService = TransmitterServiceImpl.getInstance()
+    transmitterService.requestToInjectClientSocket()
