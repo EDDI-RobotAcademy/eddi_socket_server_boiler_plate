@@ -22,6 +22,9 @@ if __name__ == '__main__':
     socketAcceptService.requestToInjectServerSocket(serverSocket)
     ColorPrinter.print_important_message("Success to inject server socket to acceptor")
 
+    receiverService = ReceiverServiceImpl.getInstance()
+    receiverService.requestToInjectClientSocket()
+
     taskWorkerService = TaskWorkerServiceImpl.getInstance()
     taskWorkerService.createTaskWorker("Acceptor", socketAcceptService.requestToAcceptClient)
     taskWorkerService.executeTaskWorker("Acceptor")
