@@ -31,3 +31,6 @@ class TransmitterRepositoryImpl(TransmitterRepository):
 
     def injectAcceptChannel(self, ipcAcceptorChannel):
         self.__ipcAcceptorChannel = ipcAcceptorChannel
+
+    def transmit(self, clientSocketObject, serializedTransmitData):
+        clientSocketObject.sendall(serializedTransmitData.encode())

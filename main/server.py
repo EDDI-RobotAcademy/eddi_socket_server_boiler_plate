@@ -36,3 +36,6 @@ if __name__ == '__main__':
 
     transmitterService = TransmitterServiceImpl.getInstance()
     transmitterService.requestToInjectClientSocket()
+
+    taskWorkerService.createTaskWorker("Transmitter", transmitterService.requestToTransmitClient)
+    taskWorkerService.executeTaskWorker("Transmitter")

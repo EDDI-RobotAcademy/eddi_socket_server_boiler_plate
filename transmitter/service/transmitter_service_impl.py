@@ -1,3 +1,5 @@
+import json
+import socket
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
@@ -45,3 +47,37 @@ class TransmitterServiceImpl(TransmitterService):
 
     def requestToInjectAcceptChannel(self, ipcAcceptorChannel):
         self.__transmitterRepository.injectAcceptChannel(ipcAcceptorChannel)
+
+    # TODO: need to change when operate with FastAPI
+    def checkTransmitChannelData(self):
+        return "치맥 먹으러 가즈아 ~~!!~!"
+
+    def requestToTransmitClient(self):
+        clientSocket = self.__transmitterRepository.getClientSocket()
+        clientSocketObject = clientSocket.getClientSocket()
+
+        while True:
+            try:
+                willTransmitData = self.checkTransmitChannelData()
+                ColorPrinter.print_important_data("will transmit data", f"{willTransmitData}")
+
+                serializedTransmitData = json.dumps(willTransmitData.toDictionary())
+                self.__transmitterRepository.transmit(clientSocketObject, serializedTransmitData)
+
+            except socket.error as socketException:
+                if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
+                    sleep(0.3)
+                else:
+                    ColorPrinter.print_important_data("transmitter exception", f"{socketException}")
+                    clientSocketObject.close()
+                    break
+
+            except Exception as exception:
+                ColorPrinter.print_important_data("transmitter exception", f"{exception}")
+                clientSocketObject.close()
+                break
+
+            finally:
+                sleep(0.3)
+
+
