@@ -61,7 +61,7 @@ class TransmitterServiceImpl(TransmitterService):
                 willTransmitData = self.checkTransmitChannelData()
                 ColorPrinter.print_important_data("will transmit data", f"{willTransmitData}")
 
-                serializedTransmitData = json.dumps(willTransmitData.toDictionary())
+                serializedTransmitData = json.dumps({"message": willTransmitData})
                 self.__transmitterRepository.transmit(clientSocketObject, serializedTransmitData)
 
             except socket.error as socketException:
