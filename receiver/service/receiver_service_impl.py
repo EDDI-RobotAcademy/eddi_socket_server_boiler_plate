@@ -27,7 +27,7 @@ class ReceiverServiceImpl(ReceiverService):
 
     # TODO: Change it to Non-Blocking for multiple request
     def validateClientSocket(self):
-        ipcAcceptorChannel = self.__receiverRepository.getIpcAcceptorChannel()
+        ipcAcceptorChannel = self.__receiverRepository.getIpcAcceptorReceiverChannel()
 
         while True:
             clientSocket = ipcAcceptorChannel.get()
