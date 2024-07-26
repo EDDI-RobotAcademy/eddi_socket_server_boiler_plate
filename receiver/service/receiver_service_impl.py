@@ -1,6 +1,9 @@
+from time import sleep
+
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
 from receiver.repository.receiver_repository_impl import ReceiverRepositoryImpl
 from receiver.service.receiver_service import ReceiverService
+from utility.color_print import ColorPrinter
 
 
 class ReceiverServiceImpl(ReceiverService):
@@ -21,7 +24,16 @@ class ReceiverServiceImpl(ReceiverService):
 
         return cls.__instance
 
+    def validateClientSocket(self):
+        while True:
+            clientSocket = self.__socketAcceptRepository.getClientSocket()
+            if clientSocket is not None:
+                return clientSocket
+
+            sleep(0.1)
+
     def requestToInjectClientSocket(self):
-        clientSocket = self.__socketAcceptRepository.getClientSocket()
+        clientSocket = self.validateClientSocket()
+        ColorPrinter.print_important_message("Success to inject client socket to receiver")
 
         self.__receiverRepository.injectClientSocket(clientSocket)
