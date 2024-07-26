@@ -30,8 +30,8 @@ if __name__ == '__main__':
     receiverService = ReceiverServiceImpl.getInstance()
     receiverService.requestToInjectClientSocket()
 
-    # taskWorkerService.createTaskWorker("Receiver", receiverService.requestToReceiveClient)
-    # taskWorkerService.executeTaskWorker("Receiver")
+    taskWorkerService.createTaskWorker("Receiver", receiverService.requestToReceiveClient)
+    taskWorkerService.executeTaskWorker("Receiver")
 
     # transmitterController = TransmitterControllerImpl.getInstance()
     # transmitterController.requestToInjectSocketClient(clientSocket)

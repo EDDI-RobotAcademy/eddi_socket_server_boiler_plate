@@ -24,6 +24,7 @@ class ReceiverServiceImpl(ReceiverService):
 
         return cls.__instance
 
+    # TODO: Change it to Non-Blocking for multiple request
     def validateClientSocket(self):
         ipcAcceptorChannel = self.__receiverRepository.getIpcAcceptorChannel()
 
@@ -44,3 +45,9 @@ class ReceiverServiceImpl(ReceiverService):
 
     def requestToInjectAcceptChannel(self, ipcAcceptorChannel):
         self.__receiverRepository.injectAcceptChannel(ipcAcceptorChannel)
+
+    def requestToReceiveClient(self):
+        clientSocket = self.__receiverRepository.getClientSocket()
+        ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
+
+
