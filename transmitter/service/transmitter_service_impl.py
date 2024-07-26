@@ -1,6 +1,7 @@
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
+from transmitter.repository.transmitter_repository_impl import TransmitterRepositoryImpl
 from transmitter.service.transmitter_service import TransmitterService
 from utility.color_print import ColorPrinter
 
