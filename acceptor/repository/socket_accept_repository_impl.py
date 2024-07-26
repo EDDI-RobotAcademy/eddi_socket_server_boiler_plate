@@ -9,8 +9,11 @@ from utility.color_print import ColorPrinter
 
 class SocketAcceptRepositoryImpl(SocketAcceptRepository):
     __instance = None
+
     __serverSocket = None
     __clientSocket = None
+
+    __ipcAcceptChannel = None
 
     def __new__(cls):
         if cls.__instance is None:
@@ -37,6 +40,9 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
 
     def injectSocketServer(self, serverSocket):
         self.__serverSocket = serverSocket
+
+    def injectAcceptChannel(self, ipcAcceptChannel):
+        self.__ipcAcceptChannel = ipcAcceptChannel
 
     def acceptClient(self):
         serverSocketObject = self.__serverSocket.getServerSocket()
