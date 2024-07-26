@@ -33,6 +33,7 @@ class ReceiverServiceImpl(ReceiverService):
             sleep(0.1)
 
     def requestToInjectClientSocket(self):
+        print("receiver service -> requestToInjectClientSocket()")
         clientSocket = self.validateClientSocket()
         ColorPrinter.print_important_message("Success to inject client socket to receiver")
 
