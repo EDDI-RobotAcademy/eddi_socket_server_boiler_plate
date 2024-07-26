@@ -54,6 +54,7 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
 
                 self.__clientSocket = AcceptedClientSocket(clientSocket, clientAddress)
                 self.__ipcAcceptorReceiverChannel.put(self.__clientSocket)
+                self.__ipcAcceptorTransmitterChannel.put(self.__clientSocket)
 
                 ColorPrinter.print_important_data("Success to accept client socket", f"{clientSocket}")
 
