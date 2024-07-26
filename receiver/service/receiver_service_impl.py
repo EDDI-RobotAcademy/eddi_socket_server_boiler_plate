@@ -61,8 +61,18 @@ class ReceiverServiceImpl(ReceiverService):
                 decodedReceiveData = receivedData.decode()
                 ColorPrinter.print_important_data("decoded receive data", f"{decodedReceiveData}")
 
+            except socket.error as socketException:
+                if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
+                    sleep(0.3)
+                else:
+                    ColorPrinter.print_important_data("receiver exception", f"{socketException}")
+                    clientSocketObject.close()
+                    break
+
             except Exception as exception:
                 ColorPrinter.print_important_data("receiver exception", f"{exception}")
+                clientSocketObject.close()
+                break
 
             finally:
                 sleep(0.3)
