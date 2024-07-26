@@ -37,13 +37,13 @@ class DomainInitializer:
         receiverService = ReceiverServiceImpl.getInstance()
         receiverService.requestToInjectAcceptorReceiverChannel(ipcAcceptorReceiverChannel)
 
-    # @staticmethod
-    # def initTransmitterDomain():
-    #     ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
-    #     ipcAcceptorChannel = ipcQueueRepository.getIPCAcceptorChannel()
-    #
-    #     transmitterService = TransmitterServiceImpl.getInstance()
-    #     transmitterService.requestToInjectAcceptChannel(ipcAcceptorChannel)
+    @staticmethod
+    def initTransmitterDomain():
+        ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
+        ipcAcceptorTransmitterChannel = ipcQueueRepository.getIPCAcceptorTransmitterChannel()
+
+        transmitterService = TransmitterServiceImpl.getInstance()
+        transmitterService.requestToInjectAcceptorTransmitterChannel(ipcAcceptorTransmitterChannel)
 
     @staticmethod
     def initEachDomain():
@@ -52,5 +52,5 @@ class DomainInitializer:
         DomainInitializer.initServerSocketDomain()
         DomainInitializer.initSocketAcceptDomain()
         DomainInitializer.initReceiverDomain()
-        # DomainInitializer.initTransmitterDomain()
+        DomainInitializer.initTransmitterDomain()
 
