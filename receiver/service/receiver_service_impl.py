@@ -25,13 +25,16 @@ class ReceiverServiceImpl(ReceiverService):
         return cls.__instance
 
     def validateClientSocket(self):
+        ipcAcceptorChannel = self.__receiverRepository.getIpcAcceptorChannel
+
         while True:
-            clientSocket = self.__socketAcceptRepository.getClientSocket()
-            # ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
+            clientSocket = ipcAcceptorChannel.get()
+            ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
+
             if clientSocket is not None:
                 return clientSocket
 
-            sleep(0.1)
+            sleep(0.3)
 
     def requestToInjectClientSocket(self):
         clientSocket = self.validateClientSocket()

@@ -50,9 +50,12 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
         while True:
             try:
                 clientSocket, clientAddress = serverSocketObject.accept()
-                ColorPrinter.print_important_data("Success to accept client socket", f"{clientSocket}")
                 clientSocket.setblocking(False)
+
                 self.__clientSocket = AcceptedClientSocket(clientSocket, clientAddress)
+                self.__ipcAcceptorChannel.put(self.__clientSocket)
+
+                ColorPrinter.print_important_data("Success to accept client socket", f"{clientSocket}")
 
             except KeyboardInterrupt:
                 print('server stopped')
