@@ -25,9 +25,11 @@ class DomainInitializer:
     def initSocketAcceptDomain():
         ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
         ipcAcceptorReceiverChannel = ipcQueueRepository.getIPCAcceptorReceiverChannel()
+        ipcAcceptorTransmitterChannel = ipcQueueRepository.getIPCAcceptorTransmitterChannel()
 
         socketAcceptService = SocketAcceptServiceImpl.getInstance()
         socketAcceptService.requestToInjectAcceptorReceiverChannel(ipcAcceptorReceiverChannel)
+        socketAcceptService.requestToInjectAcceptorTransmitterChannel(ipcAcceptorTransmitterChannel)
 
     @staticmethod
     def initReceiverDomain():
