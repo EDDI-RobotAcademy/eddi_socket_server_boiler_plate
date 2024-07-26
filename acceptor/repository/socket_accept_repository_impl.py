@@ -26,6 +26,7 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
         return cls.__instance
 
     def getClientSocket(self):
+        ColorPrinter.print_important_data("accept repository -> getClientSocket()", f"{self.__clientSocket}")
         return self.__clientSocket
 
     def killAllTask(self):
@@ -43,10 +44,9 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
         while True:
             try:
                 clientSocket, clientAddress = serverSocketObject.accept()
+                ColorPrinter.print_important_data("Success to accept client socket", f"{clientSocket}")
                 clientSocket.setblocking(False)
                 self.__clientSocket = AcceptedClientSocket(clientSocket, clientAddress)
-
-                ColorPrinter.print_important_data("Success to accept client socket", f"{clientSocket}")
 
             except KeyboardInterrupt:
                 print('server stopped')
