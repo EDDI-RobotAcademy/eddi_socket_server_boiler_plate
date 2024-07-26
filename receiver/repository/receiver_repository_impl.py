@@ -5,7 +5,7 @@ class ReceiverRepositoryImpl(ReceiverRepository):
     __instance = None
     __clientSocket = None
 
-    __ipcAcceptorChannel = None
+    __ipcAcceptorReceiverChannel = None
 
     NETWORK_BUFFER_SIZE = 2048
 
@@ -22,8 +22,8 @@ class ReceiverRepositoryImpl(ReceiverRepository):
 
         return cls.__instance
 
-    def getIpcAcceptorChannel(self):
-        return self.__ipcAcceptorChannel
+    def getIpcAcceptorReceiverChannel(self):
+        return self.__ipcAcceptorReceiverChannel
 
     def getClientSocket(self):
         return self.__clientSocket
@@ -31,8 +31,8 @@ class ReceiverRepositoryImpl(ReceiverRepository):
     def injectClientSocket(self, clientSocket):
         self.__clientSocket = clientSocket
 
-    def injectAcceptChannel(self, ipcAcceptorChannel):
-        self.__ipcAcceptorChannel = ipcAcceptorChannel
+    def injectAcceptorReceiverChannel(self, ipcAcceptorReceiverChannel):
+        self.__ipcAcceptorReceiverChannel = ipcAcceptorReceiverChannel
 
     def receive(self, clientSocketObject):
         receivedData = clientSocketObject.recv(self.NETWORK_BUFFER_SIZE)
