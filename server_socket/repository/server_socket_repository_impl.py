@@ -6,6 +6,7 @@ from decouple import config
 
 from server_socket.entity.server_socket import ServerSocket
 from server_socket.repository.server_socket_repository import ServerSocketRepository
+from utility.color_print import ColorPrinter
 
 
 class ServerSocketRepositoryImpl(ServerSocketRepository):
@@ -28,6 +29,7 @@ class ServerSocketRepositoryImpl(ServerSocketRepository):
     def create(self):
         socketObject = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__serverSocket = ServerSocket(config('HOST'), int(config('PORT')), socketObject)
+        ColorPrinter.print_important_data("created socket port", f"{int(config('PORT'))}")
         return self.__serverSocket
 
     def getServerSocket(self):
