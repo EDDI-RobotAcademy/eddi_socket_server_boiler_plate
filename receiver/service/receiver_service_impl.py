@@ -54,6 +54,12 @@ class ReceiverServiceImpl(ReceiverService):
         while True:
             try:
                 receivedData = self.__receiverRepository.receive(clientSocketObject)
+                if not receivedData:
+                    clientSocketObject.close()
+                    break
+
+                decodedReceiveData = receivedData.decode()
+                ColorPrinter.print_important_data("decoded receive data", f"{decodedReceiveData}")
 
             except Exception as exception:
                 ColorPrinter.print_important_data("receiver exception", f"{exception}")
