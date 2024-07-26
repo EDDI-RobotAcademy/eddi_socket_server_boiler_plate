@@ -1,3 +1,4 @@
+import socket
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
@@ -48,6 +49,14 @@ class ReceiverServiceImpl(ReceiverService):
 
     def requestToReceiveClient(self):
         clientSocket = self.__receiverRepository.getClientSocket()
-        ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
+        clientSocketObject = clientSocket.getClientSocket()
 
+        while True:
+            try:
+                receivedData = self.__receiverRepository.receive(clientSocketObject)
 
+            except Exception as exception:
+                ColorPrinter.print_important_data("receiver exception", f"{exception}")
+
+            finally:
+                sleep(0.3)
