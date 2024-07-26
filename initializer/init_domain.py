@@ -1,10 +1,17 @@
 from acceptor.service.socket_accept_service_impl import SocketAcceptServiceImpl
+from ipc_queue.repository.ipc_queue_repository_impl import IPCQueueRepositoryImpl
+from ipc_queue.service.ipc_queue_service_impl import IPCQueueServiceImpl
 from receiver.service.receiver_service_impl import ReceiverServiceImpl
 from server_socket.service.server_socket_service_impl import ServerSocketServiceImpl
 from task_worker.service.task_worker_service_impl import TaskWorkerServiceImpl
 
 
 class DomainInitializer:
+    @staticmethod
+    def initIPCQueueDomain():
+        ipcQueueService = IPCQueueServiceImpl.getInstance()
+        ipcQueueService.createDefaultIPCQueue()
+
     @staticmethod
     def initTaskWorkerDomain():
         TaskWorkerServiceImpl.getInstance()
@@ -15,14 +22,23 @@ class DomainInitializer:
 
     @staticmethod
     def initSocketAcceptDomain():
-        SocketAcceptServiceImpl.getInstance()
+        ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
+        ipcAcceptorChannel = ipcQueueRepository.getIPCAcceptorChannel()
+
+        socketAcceptService = SocketAcceptServiceImpl.getInstance()
+        socketAcceptService.requestToInjectAcceptChannel(ipcAcceptorChannel)
 
     @staticmethod
     def initReceiverDomain():
-        ReceiverServiceImpl.getInstance()
+        ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
+        ipcAcceptorChannel = ipcQueueRepository.getIPCAcceptorChannel()
+
+        receiverService = ReceiverServiceImpl.getInstance()
+        receiverService.requestToInjectAcceptChannel(ipcAcceptorChannel)
 
     @staticmethod
     def initEachDomain():
+        DomainInitializer.initIPCQueueDomain()
         DomainInitializer.initTaskWorkerDomain()
         DomainInitializer.initServerSocketDomain()
         DomainInitializer.initSocketAcceptDomain()
