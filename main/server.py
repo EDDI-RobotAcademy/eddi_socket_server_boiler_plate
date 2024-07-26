@@ -3,6 +3,7 @@ from colorama import Fore, Style
 
 from acceptor.service.socket_accept_service_impl import SocketAcceptServiceImpl
 from initializer.init_domain import DomainInitializer
+from receiver.service.receiver_service_impl import ReceiverServiceImpl
 from server_socket.service.server_socket_service_impl import ServerSocketServiceImpl
 from task_worker.service.task_worker_service_impl import TaskWorkerServiceImpl
 from utility.color_print import ColorPrinter
@@ -25,6 +26,12 @@ if __name__ == '__main__':
     taskWorkerService = TaskWorkerServiceImpl.getInstance()
     taskWorkerService.createTaskWorker("Acceptor", socketAcceptService.requestToAcceptClient)
     taskWorkerService.executeTaskWorker("Acceptor")
+
+    receiverService = ReceiverServiceImpl.getInstance()
+    receiverService.requestToInjectClientSocket()
+
+    # taskWorkerService.createTaskWorker("Receiver", receiverService.requestToReceiveClient)
+    # taskWorkerService.executeTaskWorker("Receiver")
 
     # transmitterController = TransmitterControllerImpl.getInstance()
     # transmitterController.requestToInjectSocketClient(clientSocket)

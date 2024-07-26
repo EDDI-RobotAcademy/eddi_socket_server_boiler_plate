@@ -3,5 +3,5 @@ from abc import ABC, abstractmethod
 
 class ReceiverService(ABC):
     @abstractmethod
-    def createReceiver(self):
+    def requestToInjectClientSocket(self):
         pass

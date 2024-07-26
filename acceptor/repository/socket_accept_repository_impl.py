@@ -25,6 +25,9 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
 
         return cls.__instance
 
+    def getClientSocket(self):
+        return self.__clientSocket
+
     def killAllTask(self):
         for activeTask in multiprocessing.active_children():
             ColorPrinter.print_important_data("Terminated Task", f"{activeTask.pid}")
