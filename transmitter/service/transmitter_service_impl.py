@@ -28,10 +28,10 @@ class TransmitterServiceImpl(TransmitterService):
 
     # TODO: Change it to Non-Blocking for multiple request
     def validateClientSocket(self):
-        ipcAcceptorChannel = self.__transmitterRepository.getIpcAcceptorChannel()
+        ipcAcceptorTransmitterChannel = self.__transmitterRepository.getIpcAcceptorTransmitterChannel()
 
         while True:
-            clientSocket = ipcAcceptorChannel.get()
+            clientSocket = ipcAcceptorTransmitterChannel.get()
             ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
 
             if clientSocket is not None:
@@ -45,8 +45,8 @@ class TransmitterServiceImpl(TransmitterService):
 
         self.__transmitterRepository.injectClientSocket(clientSocket)
 
-    def requestToInjectAcceptChannel(self, ipcAcceptorChannel):
-        self.__transmitterRepository.injectAcceptChannel(ipcAcceptorChannel)
+    def requestToInjectAcceptorTransmitterChannel(self, ipcAcceptorTransmitterChannel):
+        self.__transmitterRepository.injectAcceptorTransmitterChannel(ipcAcceptorTransmitterChannel)
 
     # TODO: need to change when operate with FastAPI
     def checkTransmitChannelData(self):

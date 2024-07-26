@@ -5,7 +5,7 @@ class TransmitterRepositoryImpl(TransmitterRepository):
     __instance = None
     __clientSocket = None
 
-    __ipcAcceptorChannel = None
+    __ipcAcceptorTransmitterChannel = None
 
     def __new__(cls):
         if cls.__instance is None:
@@ -20,8 +20,8 @@ class TransmitterRepositoryImpl(TransmitterRepository):
 
         return cls.__instance
 
-    def getIpcAcceptorChannel(self):
-        return self.__ipcAcceptorChannel
+    def getIpcAcceptorTransmitterChannel(self):
+        return self.__ipcAcceptorTransmitterChannel
 
     def getClientSocket(self):
         return self.__clientSocket
@@ -29,8 +29,8 @@ class TransmitterRepositoryImpl(TransmitterRepository):
     def injectClientSocket(self, clientSocket):
         self.__clientSocket = clientSocket
 
-    def injectAcceptChannel(self, ipcAcceptorChannel):
-        self.__ipcAcceptorChannel = ipcAcceptorChannel
+    def injectAcceptorTransmitterChannel(self, ipcAcceptorTransmitterChannel):
+        self.__ipcAcceptorTransmitterChannel = ipcAcceptorTransmitterChannel
 
     def transmit(self, clientSocketObject, serializedTransmitData):
         clientSocketObject.sendall(serializedTransmitData.encode())
