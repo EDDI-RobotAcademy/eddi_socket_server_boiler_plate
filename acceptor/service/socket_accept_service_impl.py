@@ -24,4 +24,7 @@ class SocketAcceptServiceImpl(SocketAcceptService):
 
     def requestToAcceptClient(self):
         self.__socketAcceptRepository.acceptClient()
+
+    def requestToInjectAcceptChannel(self):
+        self.__socketAcceptRepository.injectAcceptChannel()
     
