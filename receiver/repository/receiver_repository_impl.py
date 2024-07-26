@@ -20,6 +20,9 @@ class ReceiverRepositoryImpl(ReceiverRepository):
 
         return cls.__instance
 
+    def getIpcAcceptorChannel(self):
+        return self.__ipcAcceptorChannel
+
     def injectClientSocket(self, clientSocket):
         self.__clientSocket = clientSocket
 
