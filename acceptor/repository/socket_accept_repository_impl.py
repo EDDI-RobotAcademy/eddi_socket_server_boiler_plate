@@ -53,7 +53,7 @@ class SocketAcceptRepositoryImpl(SocketAcceptRepository):
                 clientSocket.setblocking(False)
 
                 self.__clientSocket = AcceptedClientSocket(clientSocket, clientAddress)
-                self.__ipcAcceptorChannel.put(self.__clientSocket)
+                self.__ipcAcceptorReceiverChannel.put(self.__clientSocket)
 
                 ColorPrinter.print_important_data("Success to accept client socket", f"{clientSocket}")
 
