@@ -38,3 +38,6 @@ class ReceiverServiceImpl(ReceiverService):
         ColorPrinter.print_important_message("Success to inject client socket to receiver")
 
         self.__receiverRepository.injectClientSocket(clientSocket)
+
+    def requestToInjectAcceptChannel(self, ipcAcceptorChannel):
+        self.__receiverRepository.injectAcceptChannel(ipcAcceptorChannel)
