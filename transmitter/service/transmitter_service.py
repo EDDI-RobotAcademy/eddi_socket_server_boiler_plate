@@ -5,4 +5,7 @@ class TransmitterService(ABC):
     @abstractmethod
     def requestToInjectClientSocket(self):
         pass
-    
+
+    @abstractmethod
+    def requestToTransmitClient(self):
+        pass
