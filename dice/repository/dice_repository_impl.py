@@ -24,6 +24,7 @@ class DiceRepositoryImpl(DiceRepository):
         self.__diceList.append(dice)
 
     def list(self):
-        return self.__diceList
+        for dice in self.__diceList:
+            print(f"dice: {dice}")
 
 

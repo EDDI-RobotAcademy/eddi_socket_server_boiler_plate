@@ -23,4 +23,4 @@ class DiceServiceImpl(DiceService):
         self.__diceRepository.roll()
 
     def diceList(self):
-        return self.__diceRepository.list()
+        self.__diceRepository.list()
