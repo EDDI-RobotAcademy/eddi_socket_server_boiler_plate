@@ -1,5 +1,5 @@
-from custom_protocol.entity.default_protocol import DefaultProtocolNumber
-from custom_protocol.repository.custom_protocol_repository import CustomProtocolRepository
+from default_protocol.entity.default_protocol import DefaultProtocolNumber
+from default_protocol.repository.custom_protocol_repository import CustomProtocolRepository
 
 try:
     from user_defined_protocol.entity.custom_protocol import CustomProtocolNumber

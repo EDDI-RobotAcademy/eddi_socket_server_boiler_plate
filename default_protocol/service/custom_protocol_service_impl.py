@@ -1,5 +1,5 @@
-from custom_protocol.repository.custom_protocol_repository_impl import CustomProtocolRepositoryImpl
-from custom_protocol.service.custom_protocol_service import CustomProtocolService
+from default_protocol.repository.custom_protocol_repository_impl import CustomProtocolRepositoryImpl
+from default_protocol.service.custom_protocol_service import CustomProtocolService
 
 
 class CustomProtocolServiceImpl(CustomProtocolService):
