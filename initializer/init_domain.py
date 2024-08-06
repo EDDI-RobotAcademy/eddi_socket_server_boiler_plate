@@ -23,12 +23,12 @@ class DomainInitializer:
         # 디폴트 프로토콜 등록을 여기서 했음
         customProtocolService.registerCustomProtocol(
             DefaultProtocolNumber.DICE_ROLL_JUST_FOR_TEST,
-            diceService.rollDice()
+            diceService.rollDice
         )
 
         customProtocolService.registerCustomProtocol(
             DefaultProtocolNumber.DICE_LIST_JUST_FOR_TEST,
-            diceService.diceList()
+            diceService.diceList
         )
 
     @staticmethod
