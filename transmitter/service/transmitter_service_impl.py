@@ -3,6 +3,9 @@ import socket
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
+from default_protocol.entity.default_protocol import DefaultProtocolNumber
+from request_generator.generator import RequestGenerator
+from request_generator.request_type import RequestType
 from transmitter.repository.transmitter_repository_impl import TransmitterRepositoryImpl
 from transmitter.service.transmitter_service import TransmitterService
 from utility.color_print import ColorPrinter
@@ -50,7 +53,8 @@ class TransmitterServiceImpl(TransmitterService):
 
     # TODO: need to change when operate with FastAPI
     def checkTransmitChannelData(self):
-        return "치맥 먹으러 가즈아 ~~!!~!"
+        rollDiceRequest = RequestGenerator.generate(DefaultProtocolNumber.ROLL_DICE)
+        return rollDiceRequest.toDictionary()
 
     def requestToTransmitClient(self):
         clientSocket = self.__transmitterRepository.getClientSocket()
@@ -58,15 +62,15 @@ class TransmitterServiceImpl(TransmitterService):
 
         while True:
             try:
-                willTransmitData = self.checkTransmitChannelData()
-                ColorPrinter.print_important_data("will transmit data", f"{willTransmitData}")
+                requestData = self.checkTransmitChannelData()
+                ColorPrinter.print_important_data("송신 할 정보", f"{requestData}")
 
-                serializedTransmitData = json.dumps({"message": willTransmitData}, ensure_ascii=False)
-                self.__transmitterRepository.transmit(clientSocketObject, serializedTransmitData)
+                serializedRequestData = json.dumps(requestData, ensure_ascii=False)
+                self.__transmitterRepository.transmit(clientSocketObject, serializedRequestData)
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
-                    sleep(0.3)
+                    sleep(0.5)
                 else:
                     ColorPrinter.print_important_data("transmitter exception", f"{socketException}")
                     clientSocketObject.close()
@@ -78,6 +82,6 @@ class TransmitterServiceImpl(TransmitterService):
                 break
 
             finally:
-                sleep(0.3)
+                sleep(0.5)
 
 

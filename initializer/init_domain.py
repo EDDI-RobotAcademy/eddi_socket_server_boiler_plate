@@ -1,4 +1,6 @@
 from acceptor.service.socket_accept_service_impl import SocketAcceptServiceImpl
+from default_protocol.entity.default_protocol import DefaultProtocolNumber
+from default_protocol.service.custom_protocol_service_impl import CustomProtocolServiceImpl
 from ipc_queue.repository.ipc_queue_repository_impl import IPCQueueRepositoryImpl
 from ipc_queue.service.ipc_queue_service_impl import IPCQueueServiceImpl
 from receiver.service.receiver_service_impl import ReceiverServiceImpl
@@ -8,6 +10,23 @@ from transmitter.service.transmitter_service_impl import TransmitterServiceImpl
 
 
 class DomainInitializer:
+
+    # @staticmethod
+    # def initCustomProtocolDomain():
+    #     customProtocolService = CustomProtocolServiceImpl.getInstance()
+    #     diceService = DiceServiceImpl.getInstance()
+    #
+    #     # 디폴트 프로토콜 등록을 여기서 했음
+    #     customProtocolService.registerCustomProtocol(
+    #         DefaultProtocolNumber.ROLL_DICE,
+    #         diceService.rollDice
+    #     )
+    #
+    #     customProtocolService.registerCustomProtocol(
+    #         DefaultProtocolNumber.LIST_DICE,
+    #         diceService.diceList
+    #     )
+
     @staticmethod
     def initIPCQueueDomain():
         ipcQueueService = IPCQueueServiceImpl.getInstance()
@@ -49,6 +68,8 @@ class DomainInitializer:
 
     @staticmethod
     def initEachDomain():
+        # DomainInitializer.initCustomProtocolDomain()
+
         DomainInitializer.initIPCQueueDomain()
         DomainInitializer.initTaskWorkerDomain()
         DomainInitializer.initServerSocketDomain()
