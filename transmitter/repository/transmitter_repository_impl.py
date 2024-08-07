@@ -7,8 +7,8 @@ class TransmitterRepositoryImpl(TransmitterRepository):
 
     __ipcAcceptorTransmitterChannel = None
 
-    # FastAPI와 Socket Server의 Receiver를 연결하는 채널
-    __ipcTransmitterFastAPIChannel = None
+    # FastAPI와 Socket Server의 Transmitter를 연결하는 채널
+    __ipcFastAPITransmitterChannel = None
 
     def __new__(cls):
         if cls.__instance is None:
@@ -35,8 +35,8 @@ class TransmitterRepositoryImpl(TransmitterRepository):
     def injectAcceptorTransmitterChannel(self, ipcAcceptorTransmitterChannel):
         self.__ipcAcceptorTransmitterChannel = ipcAcceptorTransmitterChannel
 
-    def injectTransmitterFastAPIChannel(self, ipcTransmitterFastAPIChannel):
-        self.__ipcTransmitterFastAPIChannel = ipcTransmitterFastAPIChannel
+    def injectFastAPITransmitterChannel(self, ipcFastAPITransmitterChannel):
+        self.__ipcFastAPITransmitterChannel = ipcFastAPITransmitterChannel
 
     def transmit(self, clientSocketObject, serializedTransmitData):
         clientSocketObject.sendall(serializedTransmitData.encode())
