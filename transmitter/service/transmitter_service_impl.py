@@ -51,6 +51,9 @@ class TransmitterServiceImpl(TransmitterService):
     def requestToInjectAcceptorTransmitterChannel(self, ipcAcceptorTransmitterChannel):
         self.__transmitterRepository.injectAcceptorTransmitterChannel(ipcAcceptorTransmitterChannel)
 
+    def requestToInjectTransmitterFastAPIChannel(self, ipcTransmitterFastAPIChannel):
+        self.__transmitterRepository.injectTransmitterFastAPIChannel(ipcTransmitterFastAPIChannel)
+
     # TODO: need to change when operate with FastAPI
     def checkTransmitChannelData(self):
         rollDiceRequest = RequestGenerator.generate(DefaultProtocolNumber.ROLL_DICE)
