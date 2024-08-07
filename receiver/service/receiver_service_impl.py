@@ -59,7 +59,7 @@ class ReceiverServiceImpl(ReceiverService):
                     break
 
                 decodedReceiveData = receivedData.decode()
-                ColorPrinter.print_important_data("decoded receive data", f"{decodedReceiveData}")
+                ColorPrinter.print_important_data("수신 정보", f"{decodedReceiveData}")
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
