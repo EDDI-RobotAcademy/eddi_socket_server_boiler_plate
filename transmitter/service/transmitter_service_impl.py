@@ -63,7 +63,7 @@ class TransmitterServiceImpl(TransmitterService):
         while True:
             try:
                 requestData = self.checkTransmitChannelData()
-                ColorPrinter.print_important_data("will transmit data", f"{requestData}")
+                ColorPrinter.print_important_data("송신 할 정보", f"{requestData}")
 
                 serializedRequestData = json.dumps(requestData, ensure_ascii=False)
                 self.__transmitterRepository.transmit(clientSocketObject, serializedRequestData)
