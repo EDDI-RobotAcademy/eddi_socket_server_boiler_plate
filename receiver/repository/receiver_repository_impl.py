@@ -40,6 +40,9 @@ class ReceiverRepositoryImpl(ReceiverRepository):
     def injectReceiverFastAPIChannel(self, ipcReceiverFastAPIChannel):
         self.__ipcReceiverFastAPIChannel = ipcReceiverFastAPIChannel
 
+    def getReceiverFastAPIChannel(self):
+        return self.__ipcReceiverFastAPIChannel
+
     def receive(self, clientSocketObject):
         receivedData = clientSocketObject.recv(self.NETWORK_BUFFER_SIZE)
         return receivedData
