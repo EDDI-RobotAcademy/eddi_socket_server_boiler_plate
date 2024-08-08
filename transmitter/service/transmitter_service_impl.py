@@ -60,6 +60,7 @@ class TransmitterServiceImpl(TransmitterService):
         return rollDiceRequest.toDictionary()
 
     def requestToTransmitClient(self):
+        ColorPrinter.print_important_message("Transmitter 구동 시작!")
         clientSocket = self.__transmitterRepository.getClientSocket()
         clientSocketObject = clientSocket.getClientSocket()
 
