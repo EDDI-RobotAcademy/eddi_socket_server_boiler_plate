@@ -71,8 +71,7 @@ class TransmitterServiceImpl(TransmitterService):
                 requestCommandData = ipcFastAPITransmitterChannel.get()
                 ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
 
-                serializedRequestData = json.dumps(requestCommandData, ensure_ascii=False)
-                self.__transmitterRepository.transmit(clientSocketObject, serializedRequestData)
+                self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
