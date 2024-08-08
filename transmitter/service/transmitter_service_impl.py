@@ -63,12 +63,14 @@ class TransmitterServiceImpl(TransmitterService):
         clientSocket = self.__transmitterRepository.getClientSocket()
         clientSocketObject = clientSocket.getClientSocket()
 
+        ipcFastAPITransmitterChannel = self.__transmitterRepository.getIpcFastAPITransmitterChannel()
+
         while True:
             try:
-                requestData = self.checkTransmitChannelData()
-                ColorPrinter.print_important_data("송신 할 정보", f"{requestData}")
+                requestCommandData = ipcFastAPITransmitterChannel.get()
+                ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
 
-                serializedRequestData = json.dumps(requestData, ensure_ascii=False)
+                serializedRequestData = json.dumps(requestCommandData, ensure_ascii=False)
                 self.__transmitterRepository.transmit(clientSocketObject, serializedRequestData)
 
             except socket.error as socketException:

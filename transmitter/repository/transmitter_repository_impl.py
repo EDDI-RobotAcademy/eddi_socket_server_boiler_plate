@@ -38,5 +38,8 @@ class TransmitterRepositoryImpl(TransmitterRepository):
     def injectFastAPITransmitterChannel(self, ipcFastAPITransmitterChannel):
         self.__ipcFastAPITransmitterChannel = ipcFastAPITransmitterChannel
 
+    def getIpcFastAPITransmitterChannel(self):
+        return self.__ipcFastAPITransmitterChannel
+
     def transmit(self, clientSocketObject, serializedTransmitData):
         clientSocketObject.sendall(serializedTransmitData.encode())
