@@ -55,6 +55,8 @@ class ReceiverServiceImpl(ReceiverService):
         clientSocket = self.__receiverRepository.getClientSocket()
         clientSocketObject = clientSocket.getClientSocket()
 
+        ipcReceiverFastAPIChannel = self.__receiverRepository.getReceiverFastAPIChannel()
+
         while True:
             try:
                 receivedData = self.__receiverRepository.receive(clientSocketObject)
@@ -64,6 +66,10 @@ class ReceiverServiceImpl(ReceiverService):
 
                 decodedReceiveData = receivedData.decode()
                 ColorPrinter.print_important_data("수신 정보", f"{decodedReceiveData}")
+
+                # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
+                # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
+                ipcReceiverFastAPIChannel.put(decodedReceiveData)
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
