@@ -1,3 +1,4 @@
+from thread_worker.repository.thread_worker_repository_impl import ThreadWorkerRepositoryImpl
 from thread_worker.service.thread_worker_service import ThreadWorkerService
 
 
@@ -20,3 +21,8 @@ class ThreadWorkerServiceImpl(ThreadWorkerService):
 
     def createThreadWorker(self, name, willBeExecuteFunction):
         self.__threadWorkerRepository.save(name, willBeExecuteFunction)
+
+    def executeThreadWorker(self, name):
+        self.__threadWorkerRepository.execute(name)
+
+

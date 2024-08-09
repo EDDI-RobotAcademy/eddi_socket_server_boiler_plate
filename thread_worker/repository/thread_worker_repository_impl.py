@@ -1,3 +1,6 @@
+import threading
+
+from thread_worker.entity.thread_worker import ThreadWorker
 from thread_worker.repository.thread_worker_repository import ThreadWorkerRepository
 
 
@@ -21,3 +24,12 @@ class ThreadWorkerRepositoryImpl(ThreadWorkerRepository):
     def save(self, name, willBeExecuteFunction):
         theadWorker = ThreadWorker(name, willBeExecuteFunction)
         self.__workerList[name] = theadWorker
+
+    def execute(self, name):
+        foundThreadWorker = self.__workerList[name]
+        executeFunction = foundThreadWorker.getWillBeExecuteFunction()
+
+        newThread = threading.Thread(target=executeFunction)
+        newThread.start()
+
+        foundThreadWorker.setThreadId(newThread.ident)

@@ -4,7 +4,7 @@ class ThreadWorker:
         self.__name = name
         self.__willBeExecuteFunction = willBeExecuteFunction
 
-    def setTaskPID(self, threadId: int):
+    def setThreadId(self, threadId: int):
         self.__threadId = threadId
 
     def getThreadId(self) -> int:
