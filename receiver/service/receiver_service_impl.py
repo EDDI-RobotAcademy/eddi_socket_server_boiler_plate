@@ -2,6 +2,7 @@ import socket
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
+from critical_section.manager import CriticalSectionManager
 from receiver.repository.receiver_repository_impl import ReceiverRepositoryImpl
 from receiver.service.receiver_service import ReceiverService
 from utility.color_print import ColorPrinter
@@ -16,6 +17,8 @@ class ReceiverServiceImpl(ReceiverService):
             cls.__instance.__receiverRepository = ReceiverRepositoryImpl.getInstance()
             cls.__instance.__socketAcceptRepository = SocketAcceptRepositoryImpl.getInstance()
 
+            cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
+
         return cls.__instance
 
     @classmethod
@@ -27,16 +30,16 @@ class ReceiverServiceImpl(ReceiverService):
 
     # TODO: Change it to Non-Blocking for multiple request
     def validateClientSocket(self):
-        ipcAcceptorReceiverChannel = self.__receiverRepository.getIpcAcceptorReceiverChannel()
+        # ipcAcceptorReceiverChannel = self.__receiverRepository.getIpcAcceptorReceiverChannel()
 
         while True:
-            clientSocket = ipcAcceptorReceiverChannel.get()
+            clientSocket = self.__criticalSectionManager.getClientSocket()
             ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
 
             if clientSocket is not None:
                 return clientSocket
 
-            sleep(0.3)
+            sleep(1)
 
     def requestToInjectClientSocket(self):
         clientSocket = self.validateClientSocket()
@@ -69,7 +72,8 @@ class ReceiverServiceImpl(ReceiverService):
 
                 # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
                 # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
-                ipcReceiverFastAPIChannel.put(decodedReceiveData)
+                if ipcReceiverFastAPIChannel is not None:
+                    ipcReceiverFastAPIChannel.put(decodedReceiveData)
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
