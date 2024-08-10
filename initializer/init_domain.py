@@ -6,6 +6,7 @@ from ipc_queue.service.ipc_queue_service_impl import IPCQueueServiceImpl
 from receiver.service.receiver_service_impl import ReceiverServiceImpl
 from server_socket.service.server_socket_service_impl import ServerSocketServiceImpl
 from task_worker.service.task_worker_service_impl import TaskWorkerServiceImpl
+from thread_worker.service.thread_worker_service_impl import ThreadWorkerServiceImpl
 from transmitter.service.transmitter_service_impl import TransmitterServiceImpl
 
 
@@ -26,6 +27,10 @@ class DomainInitializer:
     #         DefaultProtocolNumber.LIST_DICE,
     #         diceService.diceList
     #     )
+
+    @staticmethod
+    def initThreadWorkerDomain():
+        ThreadWorkerServiceImpl.getInstance()
 
     @staticmethod
     def initIPCQueueDomain():
@@ -69,6 +74,8 @@ class DomainInitializer:
     @staticmethod
     def initEachDomain():
         # DomainInitializer.initCustomProtocolDomain()
+
+        DomainInitializer.initThreadWorkerDomain()
 
         DomainInitializer.initIPCQueueDomain()
         DomainInitializer.initTaskWorkerDomain()
