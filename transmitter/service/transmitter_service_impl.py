@@ -3,6 +3,7 @@ import socket
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
+from critical_section.manager import CriticalSectionManager
 from default_protocol.entity.default_protocol import DefaultProtocolNumber
 from request_generator.generator import RequestGenerator
 from request_generator.request_type import RequestType
@@ -20,6 +21,8 @@ class TransmitterServiceImpl(TransmitterService):
             cls.__instance.__transmitterRepository = TransmitterRepositoryImpl.getInstance()
             cls.__instance.__socketAcceptRepository = SocketAcceptRepositoryImpl.getInstance()
 
+            cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
+
         return cls.__instance
 
     @classmethod
@@ -31,16 +34,14 @@ class TransmitterServiceImpl(TransmitterService):
 
     # TODO: Change it to Non-Blocking for multiple request
     def validateClientSocket(self):
-        ipcAcceptorTransmitterChannel = self.__transmitterRepository.getIpcAcceptorTransmitterChannel()
-
         while True:
-            clientSocket = ipcAcceptorTransmitterChannel.get()
+            clientSocket = self.__criticalSectionManager.getClientSocket()
             ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
 
             if clientSocket is not None:
                 return clientSocket
 
-            sleep(0.3)
+            sleep(1)
 
     def requestToInjectClientSocket(self):
         clientSocket = self.validateClientSocket()
@@ -68,8 +69,15 @@ class TransmitterServiceImpl(TransmitterService):
 
         while True:
             try:
-                requestCommandData = ipcFastAPITransmitterChannel.get()
+                if ipcFastAPITransmitterChannel is not None:
+                    requestCommandData = ipcFastAPITransmitterChannel.get()
+                else:
+                    requestCommandData = "가즈아!"
+
                 ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
+
+                if clientSocketObject.fileno() == -1:  # 소켓이 유효한지 확인
+                    raise socket.error("Socket is closed or invalid")
 
                 self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 
