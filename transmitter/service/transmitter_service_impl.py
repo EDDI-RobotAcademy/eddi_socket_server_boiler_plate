@@ -1,5 +1,6 @@
 import json
 import socket
+import threading
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
@@ -22,6 +23,8 @@ class TransmitterServiceImpl(TransmitterService):
             cls.__instance.__socketAcceptRepository = SocketAcceptRepositoryImpl.getInstance()
 
             cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
+
+            cls.__instance.__transmitterLock = threading.Lock()
 
         return cls.__instance
 
@@ -62,10 +65,20 @@ class TransmitterServiceImpl(TransmitterService):
 
     def requestToTransmitClient(self):
         ColorPrinter.print_important_message("Transmitter 구동 시작!")
-        clientSocket = self.__transmitterRepository.getClientSocket()
-        clientSocketObject = clientSocket.getClientSocket()
+        # clientSocket = self.__transmitterRepository.getClientSocket()
+        # clientSocketObject = clientSocket.getClientSocket()
 
         ipcFastAPITransmitterChannel = self.__transmitterRepository.getIpcFastAPITransmitterChannel()
+        clientSocketObject = None
+
+        while True:
+            clientSocket = self.__criticalSectionManager.getClientSocket()
+            if clientSocket is None:
+                sleep(0.5)
+                continue
+
+            clientSocketObject = clientSocket.getClientSocket()
+            break
 
         while True:
             try:
@@ -79,7 +92,8 @@ class TransmitterServiceImpl(TransmitterService):
                 if clientSocketObject.fileno() == -1:  # 소켓이 유효한지 확인
                     raise socket.error("Socket is closed or invalid")
 
-                self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
+                with self.__transmitterLock:
+                    self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:

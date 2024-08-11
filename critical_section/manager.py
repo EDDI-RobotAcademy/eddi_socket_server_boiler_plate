@@ -18,15 +18,25 @@ class CriticalSectionManager:
             cls.__instance = cls()
         return cls.__instance
 
+    def checkClientSocketIsNone(self):
+        if self.__clientSocket is None:
+            return False
+
+        return True
+
     def setClientSocket(self, clientSocket):
-        with self.__lock:  # Lock을 사용해 Critical Section 보호
-            self.__clientSocket = clientSocket
-            ColorPrinter.print_important_data("CriticalSectionManager -> setClientSocket", f"{clientSocket}")
+        # with self.__lock:  # Lock을 사용해 Critical Section 보호
+        self.__clientSocket = clientSocket
+        ColorPrinter.print_important_data("CriticalSectionManager -> setClientSocket", f"{clientSocket}")
 
     def getClientSocket(self):
-        with self.__lock:  # Lock을 사용해 Critical Section 보호
+        # 소켓이 닫혀 있거나 유효하지 않으면 None 반환
+        if self.__clientSocket is not None:
             ColorPrinter.print_important_data("CriticalSectionManager -> getClientSocket", f"{self.__clientSocket}")
             return self.__clientSocket
+        else:
+            self.clearClientSocket()  # 닫힌 소켓 제거
+            return None
 
     def clearClientSocket(self):
         with self.__lock:  # Lock을 사용해 Critical Section 보호
