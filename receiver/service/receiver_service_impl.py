@@ -1,4 +1,7 @@
+import select
 import socket
+import ssl
+import threading
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
@@ -18,6 +21,8 @@ class ReceiverServiceImpl(ReceiverService):
             cls.__instance.__socketAcceptRepository = SocketAcceptRepositoryImpl.getInstance()
 
             cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
+
+            cls.__instance.__receiverLock = threading.Lock()
 
         return cls.__instance
 
@@ -55,14 +60,33 @@ class ReceiverServiceImpl(ReceiverService):
 
     def requestToReceiveClient(self):
         ColorPrinter.print_important_message("Receiver 구동 시작!")
-        clientSocket = self.__receiverRepository.getClientSocket()
-        clientSocketObject = clientSocket.getClientSocket()
+        # clientSocket = self.__receiverRepository.getClientSocket()
+        # clientSocketObject = clientSocket.getClientSocket()
 
         ipcReceiverFastAPIChannel = self.__receiverRepository.getReceiverFastAPIChannel()
+        clientSocketObject = None
+
+        while True:
+            clientSocket = self.__criticalSectionManager.getClientSocket()
+            if clientSocket is None:
+                sleep(0.5)
+                continue
+
+            clientSocketObject = clientSocket.getClientSocket()
+            break
+
+        ColorPrinter.print_important_data("SSL Socket", clientSocketObject)
 
         while True:
             try:
-                receivedData = self.__receiverRepository.receive(clientSocketObject)
+                with self.__receiverLock:  # threading.Lock을 사용하여 동기화
+                    ready_to_read, ready_to_write, in_error = select.select([clientSocketObject], [], [], 0.5)
+
+                    if not ready_to_read:
+                        continue
+
+                    receivedData = self.__receiverRepository.receive(clientSocketObject)
+
                 if not receivedData:
                     clientSocketObject.close()
                     break
@@ -74,6 +98,11 @@ class ReceiverServiceImpl(ReceiverService):
                 # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
                 if ipcReceiverFastAPIChannel is not None:
                     ipcReceiverFastAPIChannel.put(decodedReceiveData)
+
+            except ssl.SSLError as ssl_error:
+                ColorPrinter.print_important_data("SSL error during receive", str(ssl_error))
+                clientSocketObject.close()
+                break
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
