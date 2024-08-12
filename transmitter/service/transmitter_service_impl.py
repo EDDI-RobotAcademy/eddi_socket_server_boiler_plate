@@ -6,6 +6,7 @@ from time import sleep
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
 from critical_section.manager import CriticalSectionManager
 from default_protocol.entity.default_protocol import DefaultProtocolNumber
+from lock_manager.socket_lock_manager import SocketLockManager
 from request_generator.generator import RequestGenerator
 from request_generator.request_type import RequestType
 from transmitter.repository.transmitter_repository_impl import TransmitterRepositoryImpl
@@ -24,7 +25,7 @@ class TransmitterServiceImpl(TransmitterService):
 
             cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
 
-            cls.__instance.__transmitterLock = threading.Lock()
+            cls.__instance.__transmitterLock = SocketLockManager.getLock()
 
         return cls.__instance
 
@@ -82,17 +83,21 @@ class TransmitterServiceImpl(TransmitterService):
 
         while True:
             try:
-                if ipcFastAPITransmitterChannel is not None:
-                    requestCommandData = ipcFastAPITransmitterChannel.get()
-                else:
-                    requestCommandData = "가즈아!"
-
-                ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
-
-                if clientSocketObject.fileno() == -1:  # 소켓이 유효한지 확인
-                    raise socket.error("Socket is closed or invalid")
-
                 with self.__transmitterLock:
+                    if ipcFastAPITransmitterChannel is not None:
+                        requestCommandData = ipcFastAPITransmitterChannel.get()
+                    else:
+                        commandData = {
+                            "command": 77777,
+                            "data": "가즈아!"
+                        }
+                        requestCommandData = json.dumps(commandData)
+
+                    ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
+
+                    # if clientSocketObject.fileno() == -1:  # 소켓이 유효한지 확인
+                    #     raise socket.error("Socket is closed or invalid")
+
                     self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 
             except socket.error as socketException:
