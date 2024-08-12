@@ -81,6 +81,8 @@ class TransmitterServiceImpl(TransmitterService):
             clientSocketObject = clientSocket.getClientSocket()
             break
 
+        count = 0
+
         while True:
             try:
                 with self.__transmitterLock:
@@ -88,10 +90,11 @@ class TransmitterServiceImpl(TransmitterService):
                         requestCommandData = ipcFastAPITransmitterChannel.get()
                     else:
                         commandData = {
-                            "command": 77777,
-                            "data": "가즈아!"
+                            "command": count % 2 + 1,
+                            "data": None
                         }
                         requestCommandData = json.dumps(commandData)
+                        count += 1
 
                     ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
 
