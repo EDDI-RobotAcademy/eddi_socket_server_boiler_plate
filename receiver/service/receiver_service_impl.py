@@ -6,6 +6,7 @@ from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
 from critical_section.manager import CriticalSectionManager
+from lock_manager.socket_lock_manager import SocketLockManager
 from receiver.repository.receiver_repository_impl import ReceiverRepositoryImpl
 from receiver.service.receiver_service import ReceiverService
 from utility.color_print import ColorPrinter
@@ -22,7 +23,7 @@ class ReceiverServiceImpl(ReceiverService):
 
             cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
 
-            cls.__instance.__receiverLock = threading.Lock()
+            cls.__instance.__receiverLock = SocketLockManager.getLock()
 
         return cls.__instance
 
@@ -102,7 +103,6 @@ class ReceiverServiceImpl(ReceiverService):
             except ssl.SSLError as ssl_error:
                 ColorPrinter.print_important_data("SSL error during receive", str(ssl_error))
                 clientSocketObject.close()
-                break
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
@@ -110,12 +110,10 @@ class ReceiverServiceImpl(ReceiverService):
                 else:
                     ColorPrinter.print_important_data("receiver exception", f"{socketException}")
                     clientSocketObject.close()
-                    break
 
             except Exception as exception:
                 ColorPrinter.print_important_data("receiver exception", f"{exception}")
                 clientSocketObject.close()
-                break
 
             finally:
                 sleep(0.3)

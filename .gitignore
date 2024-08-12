@@ -296,3 +296,5 @@ pyrightconfig.json
 
 # exclude *.pem
 *.pem
+*.crt
+*.key
