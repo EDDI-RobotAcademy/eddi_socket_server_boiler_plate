@@ -66,7 +66,7 @@ class ServerSocketServiceImpl(ServerSocketService):
 
                 self.__serverSocketRepository.setNonBlock()
             except Exception as e:
-                self.killAllTask()
-
+                # self.killAllTask()
+                ColorPrinter.print_important_data("prepareServerSocket() Exception", str(e))
 
     

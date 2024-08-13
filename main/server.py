@@ -7,7 +7,9 @@ from os_detector.detect import OperatingSystemDetector
 from os_detector.operating_system import OperatingSystem
 from receiver.service.receiver_service_impl import ReceiverServiceImpl
 from server_socket.service.server_socket_service_impl import ServerSocketServiceImpl
+from ssl_tls.ssl_tls_context_manager import SslTlsContextManager
 from task_worker.service.task_worker_service_impl import TaskWorkerServiceImpl
+from thread_worker.service.thread_worker_service_impl import ThreadWorkerServiceImpl
 from transmitter.service.transmitter_service_impl import TransmitterServiceImpl
 from utility.color_print import ColorPrinter
 
@@ -33,18 +35,16 @@ if __name__ == '__main__':
     socketAcceptService.requestToInjectServerSocket(serverSocket)
     ColorPrinter.print_important_message("Success to inject server socket to acceptor")
 
-    taskWorkerService = TaskWorkerServiceImpl.getInstance()
-    taskWorkerService.createTaskWorker("Acceptor", socketAcceptService.requestToAcceptClient)
-    taskWorkerService.executeTaskWorker("Acceptor")
+    theadWorkerService = ThreadWorkerServiceImpl.getInstance()
+    theadWorkerService.createThreadWorker("Acceptor", socketAcceptService.requestToAcceptClient)
+    theadWorkerService.executeThreadWorker("Acceptor")
 
     receiverService = ReceiverServiceImpl.getInstance()
-    receiverService.requestToInjectClientSocket()
 
-    taskWorkerService.createTaskWorker("Receiver", receiverService.requestToReceiveClient)
-    taskWorkerService.executeTaskWorker("Receiver")
+    theadWorkerService.createThreadWorker("Receiver", receiverService.requestToReceiveClient)
+    theadWorkerService.executeThreadWorker("Receiver")
 
     transmitterService = TransmitterServiceImpl.getInstance()
-    transmitterService.requestToInjectClientSocket()
 
-    taskWorkerService.createTaskWorker("Transmitter", transmitterService.requestToTransmitClient)
-    taskWorkerService.executeTaskWorker("Transmitter")
+    theadWorkerService.createThreadWorker("Transmitter", transmitterService.requestToTransmitClient)
+    theadWorkerService.executeThreadWorker("Transmitter")

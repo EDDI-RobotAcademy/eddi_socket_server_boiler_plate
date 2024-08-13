@@ -1,7 +1,12 @@
+import select
 import socket
+import ssl
+import threading
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
+from critical_section.manager import CriticalSectionManager
+from lock_manager.socket_lock_manager import SocketLockManager
 from receiver.repository.receiver_repository_impl import ReceiverRepositoryImpl
 from receiver.service.receiver_service import ReceiverService
 from utility.color_print import ColorPrinter
@@ -16,6 +21,10 @@ class ReceiverServiceImpl(ReceiverService):
             cls.__instance.__receiverRepository = ReceiverRepositoryImpl.getInstance()
             cls.__instance.__socketAcceptRepository = SocketAcceptRepositoryImpl.getInstance()
 
+            cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
+
+            cls.__instance.__receiverLock = SocketLockManager.getLock()
+
         return cls.__instance
 
     @classmethod
@@ -27,16 +36,16 @@ class ReceiverServiceImpl(ReceiverService):
 
     # TODO: Change it to Non-Blocking for multiple request
     def validateClientSocket(self):
-        ipcAcceptorReceiverChannel = self.__receiverRepository.getIpcAcceptorReceiverChannel()
+        # ipcAcceptorReceiverChannel = self.__receiverRepository.getIpcAcceptorReceiverChannel()
 
         while True:
-            clientSocket = ipcAcceptorReceiverChannel.get()
+            clientSocket = self.__criticalSectionManager.getClientSocket()
             ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
 
             if clientSocket is not None:
                 return clientSocket
 
-            sleep(0.3)
+            sleep(1)
 
     def requestToInjectClientSocket(self):
         clientSocket = self.validateClientSocket()
@@ -52,14 +61,31 @@ class ReceiverServiceImpl(ReceiverService):
 
     def requestToReceiveClient(self):
         ColorPrinter.print_important_message("Receiver 구동 시작!")
-        clientSocket = self.__receiverRepository.getClientSocket()
-        clientSocketObject = clientSocket.getClientSocket()
 
         ipcReceiverFastAPIChannel = self.__receiverRepository.getReceiverFastAPIChannel()
+        clientSocketObject = None
+
+        while True:
+            clientSocket = self.__criticalSectionManager.getClientSocket()
+            if clientSocket is None:
+                sleep(0.5)
+                continue
+
+            clientSocketObject = clientSocket.getClientSocket()
+            break
+
+        ColorPrinter.print_important_data("SSL Socket", clientSocketObject)
 
         while True:
             try:
-                receivedData = self.__receiverRepository.receive(clientSocketObject)
+                with self.__receiverLock:  # threading.Lock을 사용하여 동기화
+                    ready_to_read, ready_to_write, in_error = select.select([clientSocketObject], [], [], 0.5)
+
+                    if not ready_to_read:
+                        continue
+
+                    receivedData = self.__receiverRepository.receive(clientSocketObject)
+
                 if not receivedData:
                     clientSocketObject.close()
                     break
@@ -69,7 +95,12 @@ class ReceiverServiceImpl(ReceiverService):
 
                 # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
                 # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
-                ipcReceiverFastAPIChannel.put(decodedReceiveData)
+                if ipcReceiverFastAPIChannel is not None:
+                    ipcReceiverFastAPIChannel.put(decodedReceiveData)
+
+            except ssl.SSLError as ssl_error:
+                ColorPrinter.print_important_data("SSL error during receive", str(ssl_error))
+                clientSocketObject.close()
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
@@ -77,12 +108,10 @@ class ReceiverServiceImpl(ReceiverService):
                 else:
                     ColorPrinter.print_important_data("receiver exception", f"{socketException}")
                     clientSocketObject.close()
-                    break
 
             except Exception as exception:
                 ColorPrinter.print_important_data("receiver exception", f"{exception}")
                 clientSocketObject.close()
-                break
 
             finally:
                 sleep(0.3)

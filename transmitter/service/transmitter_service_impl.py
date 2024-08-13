@@ -1,9 +1,12 @@
 import json
 import socket
+import threading
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
+from critical_section.manager import CriticalSectionManager
 from default_protocol.entity.default_protocol import DefaultProtocolNumber
+from lock_manager.socket_lock_manager import SocketLockManager
 from request_generator.generator import RequestGenerator
 from request_generator.request_type import RequestType
 from transmitter.repository.transmitter_repository_impl import TransmitterRepositoryImpl
@@ -20,6 +23,10 @@ class TransmitterServiceImpl(TransmitterService):
             cls.__instance.__transmitterRepository = TransmitterRepositoryImpl.getInstance()
             cls.__instance.__socketAcceptRepository = SocketAcceptRepositoryImpl.getInstance()
 
+            cls.__instance.__criticalSectionManager = CriticalSectionManager.getInstance()
+
+            cls.__instance.__transmitterLock = SocketLockManager.getLock()
+
         return cls.__instance
 
     @classmethod
@@ -31,16 +38,14 @@ class TransmitterServiceImpl(TransmitterService):
 
     # TODO: Change it to Non-Blocking for multiple request
     def validateClientSocket(self):
-        ipcAcceptorTransmitterChannel = self.__transmitterRepository.getIpcAcceptorTransmitterChannel()
-
         while True:
-            clientSocket = ipcAcceptorTransmitterChannel.get()
+            clientSocket = self.__criticalSectionManager.getClientSocket()
             ColorPrinter.print_important_data("Try to get ClientSocket", f"{clientSocket}")
 
             if clientSocket is not None:
                 return clientSocket
 
-            sleep(0.3)
+            sleep(1)
 
     def requestToInjectClientSocket(self):
         clientSocket = self.validateClientSocket()
@@ -61,17 +66,37 @@ class TransmitterServiceImpl(TransmitterService):
 
     def requestToTransmitClient(self):
         ColorPrinter.print_important_message("Transmitter 구동 시작!")
-        clientSocket = self.__transmitterRepository.getClientSocket()
-        clientSocketObject = clientSocket.getClientSocket()
 
         ipcFastAPITransmitterChannel = self.__transmitterRepository.getIpcFastAPITransmitterChannel()
+        clientSocketObject = None
+
+        while True:
+            clientSocket = self.__criticalSectionManager.getClientSocket()
+            if clientSocket is None:
+                sleep(0.5)
+                continue
+
+            clientSocketObject = clientSocket.getClientSocket()
+            break
+
+        count = 0
 
         while True:
             try:
-                requestCommandData = ipcFastAPITransmitterChannel.get()
-                ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
+                with self.__transmitterLock:
+                    if ipcFastAPITransmitterChannel is not None:
+                        requestCommandData = ipcFastAPITransmitterChannel.get()
+                    else:
+                        commandData = {
+                            "command": count % 2 + 1,
+                            "data": None
+                        }
+                        requestCommandData = json.dumps(commandData)
+                        count += 1
 
-                self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
+                    ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
+
+                    self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
