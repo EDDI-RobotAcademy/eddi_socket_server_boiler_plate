@@ -51,49 +51,19 @@ class DomainInitializer:
 
     @staticmethod
     def initSocketAcceptDomain():
-        ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
-        ipcAcceptorReceiverChannel = ipcQueueRepository.getIPCAcceptorReceiverChannel()
-        ipcAcceptorTransmitterChannel = ipcQueueRepository.getIPCAcceptorTransmitterChannel()
-
         socketAcceptService = SocketAcceptServiceImpl.getInstance()
-        # socketAcceptService.requestToInjectAcceptorReceiverChannel(ipcAcceptorReceiverChannel)
-        # socketAcceptService.requestToInjectAcceptorTransmitterChannel(ipcAcceptorTransmitterChannel)
 
     @staticmethod
     def initReceiverDomain():
-        ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
-        ipcAcceptorReceiverChannel = ipcQueueRepository.getIPCAcceptorReceiverChannel()
-
         receiverService = ReceiverServiceImpl.getInstance()
-        receiverService.requestToInjectAcceptorReceiverChannel(ipcAcceptorReceiverChannel)
 
     @staticmethod
     def initTransmitterDomain():
-        ipcQueueRepository = IPCQueueRepositoryImpl.getInstance()
-        ipcAcceptorTransmitterChannel = ipcQueueRepository.getIPCAcceptorTransmitterChannel()
-
         transmitterService = TransmitterServiceImpl.getInstance()
-        transmitterService.requestToInjectAcceptorTransmitterChannel(ipcAcceptorTransmitterChannel)
-
-    # @staticmethod
-    # def initSslTlsContext():
-    #     # 환경 변수에서 인증서와 키 파일 경로 로드
-    #     serverCertificate = config('SERVER_CERTIFICATE')
-    #     serverKey = config('SERVER_PRIVATE')
-    #     clientCA = config('CLIENT_CA_CERTIFICATE')
-    #
-    #     if not serverCertificate or not serverKey:
-    #         raise ValueError("SSL/TLS 설정에 필요한 환경 변수가 누락되었습니다.")
-    #         exit(1)
-    #
-    #     sslContextManager = SslTlsContextManager.getInstance()
-    #     sslContextManager.setupSSLContext(certfile=serverCertificate, keyfile=serverKey, cafile=clientCA)
-    #     ColorPrinter.print_important_message("SSL/TLS context initialized successfully.")
 
     @staticmethod
     def initEachDomain():
         # DomainInitializer.initCustomProtocolDomain()
-        # DomainInitializer.initSslTlsContext()
 
         DomainInitializer.initThreadWorkerDomain()
 
