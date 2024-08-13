@@ -66,8 +66,6 @@ class TransmitterServiceImpl(TransmitterService):
 
     def requestToTransmitClient(self):
         ColorPrinter.print_important_message("Transmitter 구동 시작!")
-        # clientSocket = self.__transmitterRepository.getClientSocket()
-        # clientSocketObject = clientSocket.getClientSocket()
 
         ipcFastAPITransmitterChannel = self.__transmitterRepository.getIpcFastAPITransmitterChannel()
         clientSocketObject = None
@@ -97,9 +95,6 @@ class TransmitterServiceImpl(TransmitterService):
                         count += 1
 
                     ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
-
-                    # if clientSocketObject.fileno() == -1:  # 소켓이 유효한지 확인
-                    #     raise socket.error("Socket is closed or invalid")
 
                     self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 

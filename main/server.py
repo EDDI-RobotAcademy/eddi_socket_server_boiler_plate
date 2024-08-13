@@ -40,13 +40,11 @@ if __name__ == '__main__':
     theadWorkerService.executeThreadWorker("Acceptor")
 
     receiverService = ReceiverServiceImpl.getInstance()
-    # receiverService.requestToInjectClientSocket()
 
     theadWorkerService.createThreadWorker("Receiver", receiverService.requestToReceiveClient)
     theadWorkerService.executeThreadWorker("Receiver")
 
     transmitterService = TransmitterServiceImpl.getInstance()
-    # transmitterService.requestToInjectClientSocket()
 
     theadWorkerService.createThreadWorker("Transmitter", transmitterService.requestToTransmitClient)
     theadWorkerService.executeThreadWorker("Transmitter")
