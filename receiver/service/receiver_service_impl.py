@@ -66,6 +66,7 @@ class ReceiverServiceImpl(ReceiverService):
         ColorPrinter.print_important_message("Receiver 구동 시작!")
 
         ipcReceiverFastAPIChannel = self.__receiverRepository.getReceiverFastAPIChannel()
+        userDefinedReceiverFastAPIChannel = self.__receiverRepository.getUserDefinedReceiverFastAPIChannel()
         clientSocketObject = None
 
         while True:
@@ -95,6 +96,11 @@ class ReceiverServiceImpl(ReceiverService):
 
                 decodedReceiveData = receivedData.decode()
                 ColorPrinter.print_important_data("수신 정보", f"{decodedReceiveData}")
+
+                # TODO: 추후 사용하는 IPC에 따라 선별적으로 선택 할 수 있도록 재구성이 필요함
+                if userDefinedReceiverFastAPIChannel is not None:
+                    userDefinedReceiverFastAPIChannel.put(decodedReceiveData)
+                    continue
 
                 # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
                 # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
