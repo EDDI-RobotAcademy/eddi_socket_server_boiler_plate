@@ -59,6 +59,9 @@ class ReceiverServiceImpl(ReceiverService):
     def requestToInjectReceiverFastAPIChannel(self, ipcReceiverFastAPIChannel):
         self.__receiverRepository.injectReceiverFastAPIChannel(ipcReceiverFastAPIChannel)
 
+    def requestToInjectUserDefinedReceiverFastAPIChannel(self, userDefinedReceiverFastAPIChannel):
+        self.__receiverRepository.injectUserDefinedReceiverFastAPIChannel(userDefinedReceiverFastAPIChannel)
+
     def requestToReceiveClient(self):
         ColorPrinter.print_important_message("Receiver 구동 시작!")
 

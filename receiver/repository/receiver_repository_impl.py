@@ -10,6 +10,9 @@ class ReceiverRepositoryImpl(ReceiverRepository):
     # FastAPI와 Socket Server의 Receiver를 연결하는 채널
     __ipcReceiverFastAPIChannel = None
 
+    # DLLS-FastAPI와 Socket Server의 Receiver를 연결하는 채널
+    __userDefinedReceiverFastAPIChannel = None
+
     NETWORK_BUFFER_SIZE = 2048
 
     def __new__(cls):
@@ -40,8 +43,14 @@ class ReceiverRepositoryImpl(ReceiverRepository):
     def injectReceiverFastAPIChannel(self, ipcReceiverFastAPIChannel):
         self.__ipcReceiverFastAPIChannel = ipcReceiverFastAPIChannel
 
+    def injectUserDefinedReceiverFastAPIChannel(self, userDefinedReceiverFastAPIChannel):
+        self.__userDefinedReceiverFastAPIChannel = userDefinedReceiverFastAPIChannel
+
     def getReceiverFastAPIChannel(self):
         return self.__ipcReceiverFastAPIChannel
+
+    def getUserDefinedReceiverFastAPIChannel(self):
+        return self.__userDefinedReceiverFastAPIChannel
 
     def receive(self, clientSocketObject):
         receivedData = clientSocketObject.recv(self.NETWORK_BUFFER_SIZE)
