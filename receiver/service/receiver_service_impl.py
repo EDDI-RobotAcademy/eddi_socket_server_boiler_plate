@@ -99,12 +99,14 @@ class ReceiverServiceImpl(ReceiverService):
 
                 # TODO: 추후 사용하는 IPC에 따라 선별적으로 선택 할 수 있도록 재구성이 필요함
                 if userDefinedReceiverFastAPIChannel is not None:
+                    ColorPrinter.print_important_message("UserDefined 정보 Receiver Channel에 데이터 설정")
                     userDefinedReceiverFastAPIChannel.put(decodedReceiveData)
                     continue
 
                 # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
                 # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
                 if ipcReceiverFastAPIChannel is not None:
+                    ColorPrinter.print_important_message("FastAPI Receiver Channel에 데이터 설정")
                     ipcReceiverFastAPIChannel.put(decodedReceiveData)
 
             except ssl.SSLError as ssl_error:
