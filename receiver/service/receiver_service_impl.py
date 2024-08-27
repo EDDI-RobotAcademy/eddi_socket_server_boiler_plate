@@ -115,7 +115,7 @@ class ReceiverServiceImpl(ReceiverService):
 
             except socket.error as socketException:
                 if socketException.errno == socket.errno.EAGAIN == socket.errno.EWOULDBLOCK:
-                    sleep(0.3)
+                    continue
                 else:
                     ColorPrinter.print_important_data("receiver exception", f"{socketException}")
                     clientSocketObject.close()
@@ -123,6 +123,3 @@ class ReceiverServiceImpl(ReceiverService):
             except Exception as exception:
                 ColorPrinter.print_important_data("receiver exception", f"{exception}")
                 clientSocketObject.close()
-
-            finally:
-                sleep(0.3)
