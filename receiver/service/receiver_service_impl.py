@@ -5,6 +5,7 @@ import threading
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
+from channel_selector.selector import ChannelSelector
 from critical_section.manager import CriticalSectionManager
 from lock_manager.socket_lock_manager import SocketLockManager
 from receiver.repository.receiver_repository_impl import ReceiverRepositoryImpl
@@ -97,15 +98,24 @@ class ReceiverServiceImpl(ReceiverService):
                 decodedReceiveData = receivedData.decode()
                 ColorPrinter.print_important_data("수신 정보", f"{decodedReceiveData}")
 
-                # TODO: 추후 사용하는 IPC에 따라 선별적으로 선택 할 수 있도록 재구성이 필요함
-                if userDefinedReceiverFastAPIChannel is not None:
+                # # TODO: 추후 사용하는 IPC에 따라 선별적으로 선택 할 수 있도록 재구성이 필요함
+                # if userDefinedReceiverFastAPIChannel is not None:
+                #     ColorPrinter.print_important_message("UserDefined 정보 Receiver Channel에 데이터 설정")
+                #     userDefinedReceiverFastAPIChannel.put(decodedReceiveData)
+                #     continue
+                #
+                # # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
+                # # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
+                # if ipcReceiverFastAPIChannel is not None:
+                #     ColorPrinter.print_important_message("FastAPI Receiver Channel에 데이터 설정")
+                #     ipcReceiverFastAPIChannel.put(decodedReceiveData)
+
+                # TODO: 사실 좀 더 개선하는 것이 좋음 (추후 확장성을 고려한다면)
+                isItUserDefinedChannel = ChannelSelector.findUserDefinedReceiverChannel(decodedReceiveData)
+                if isItUserDefinedChannel is True:
                     ColorPrinter.print_important_message("UserDefined 정보 Receiver Channel에 데이터 설정")
                     userDefinedReceiverFastAPIChannel.put(decodedReceiveData)
-                    continue
-
-                # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
-                # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
-                if ipcReceiverFastAPIChannel is not None:
+                else:
                     ColorPrinter.print_important_message("FastAPI Receiver Channel에 데이터 설정")
                     ipcReceiverFastAPIChannel.put(decodedReceiveData)
 
