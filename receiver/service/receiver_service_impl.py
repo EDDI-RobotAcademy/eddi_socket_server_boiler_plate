@@ -114,10 +114,12 @@ class ReceiverServiceImpl(ReceiverService):
                 isItUserDefinedChannel = ChannelSelector.findUserDefinedReceiverChannel(decodedReceiveData)
                 if isItUserDefinedChannel is True:
                     ColorPrinter.print_important_message("UserDefined 정보 Receiver Channel에 데이터 설정")
-                    userDefinedReceiverFastAPIChannel.put(decodedReceiveData)
+                    if userDefinedReceiverFastAPIChannel is not None:
+                        userDefinedReceiverFastAPIChannel.put(decodedReceiveData)
                 else:
                     ColorPrinter.print_important_message("FastAPI Receiver Channel에 데이터 설정")
-                    ipcReceiverFastAPIChannel.put(decodedReceiveData)
+                    if ipcReceiverFastAPIChannel is not None:
+                        ipcReceiverFastAPIChannel.put(decodedReceiveData)
 
             except ssl.SSLError as ssl_error:
                 ColorPrinter.print_important_data("SSL error during receive", str(ssl_error))
