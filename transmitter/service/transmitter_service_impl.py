@@ -83,19 +83,19 @@ class TransmitterServiceImpl(TransmitterService):
 
         while True:
             try:
+                if ipcFastAPITransmitterChannel is not None:
+                    requestCommandData = ipcFastAPITransmitterChannel.get()
+                else:
+                    commandData = {
+                        "command": count % 2 + 1,
+                        "data": None
+                    }
+                    requestCommandData = json.dumps(commandData)
+                    count += 1
+
+                ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
+
                 with self.__transmitterLock:
-                    if ipcFastAPITransmitterChannel is not None:
-                        requestCommandData = ipcFastAPITransmitterChannel.get()
-                    else:
-                        commandData = {
-                            "command": count % 2 + 1,
-                            "data": None
-                        }
-                        requestCommandData = json.dumps(commandData)
-                        count += 1
-
-                    ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
-
                     self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 
             except socket.error as socketException:
