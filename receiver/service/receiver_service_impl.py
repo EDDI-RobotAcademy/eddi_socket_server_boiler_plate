@@ -83,12 +83,12 @@ class ReceiverServiceImpl(ReceiverService):
 
         while True:
             try:
+                ready_to_read, ready_to_write, in_error = select.select([clientSocketObject], [], [], 0.5)
+
+                if not ready_to_read:
+                    continue
+
                 with self.__receiverLock:  # threading.Lock을 사용하여 동기화
-                    ready_to_read, ready_to_write, in_error = select.select([clientSocketObject], [], [], 0.5)
-
-                    if not ready_to_read:
-                        continue
-
                     receivedData = self.__receiverRepository.receive(clientSocketObject)
 
                 if not receivedData:
