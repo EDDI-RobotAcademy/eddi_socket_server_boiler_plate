@@ -123,3 +123,6 @@ class ReceiverServiceImpl(ReceiverService):
             except Exception as exception:
                 ColorPrinter.print_important_data("receiver exception", f"{exception}")
                 clientSocketObject.close()
+
+            finally:
+                sleep(0.5)
