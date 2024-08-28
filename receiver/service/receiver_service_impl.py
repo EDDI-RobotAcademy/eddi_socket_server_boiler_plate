@@ -1,3 +1,4 @@
+import json
 import select
 import socket
 import ssl
@@ -63,6 +64,15 @@ class ReceiverServiceImpl(ReceiverService):
     def requestToInjectUserDefinedReceiverFastAPIChannel(self, userDefinedReceiverFastAPIChannel):
         self.__receiverRepository.injectUserDefinedReceiverFastAPIChannel(userDefinedReceiverFastAPIChannel)
 
+    def __recvFixedLength(self, clientSocketObject, length):
+        data = b''
+        while len(data) < length:
+            chunk = clientSocketObject.recv(length - len(data))
+            if not chunk:
+                raise ConnectionError("Socket connection lost")
+            data += chunk
+        return data
+
     def requestToReceiveClient(self):
         ColorPrinter.print_important_message("Receiver 구동 시작!")
 
@@ -89,7 +99,24 @@ class ReceiverServiceImpl(ReceiverService):
                     continue
 
                 with self.__receiverLock:  # threading.Lock을 사용하여 동기화
-                    receivedData = self.__receiverRepository.receive(clientSocketObject)
+                    # receivedData = self.__receiverRepository.receive(clientSocketObject)
+                    headerData = self.__recvFixedLength(clientSocketObject, 58)
+                    ColorPrinter.print_important_data("headerData", headerData)
+
+                    parsedHeaderData = json.loads(headerData)
+                    protocolNumber = int(parsedHeaderData.get("protocolNumber"))
+                    packetDataLength = int(parsedHeaderData.get("packetDataLength").strip())
+                    ColorPrinter.print_important_data("protocolNumber", protocolNumber)
+                    ColorPrinter.print_important_data("packetDataLength", packetDataLength)
+
+                    # protocolNumberString = headerData[:8].decode('utf-8').strip()
+                    # packetDataLengthString = headerData[8:].decode('utf-8').strip()
+
+                    # protocolNumber = int(protocolNumberString)
+                    # packetLength = int(packetDataLengthString)
+
+                    # 지정된 길이만큼 데이터 수신
+                    receivedData = self.__recvFixedLength(clientSocketObject, packetDataLength)
 
                 if not receivedData:
                     clientSocketObject.close()
