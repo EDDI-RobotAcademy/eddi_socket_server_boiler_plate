@@ -3,6 +3,7 @@ import select
 import socket
 import ssl
 import threading
+import time
 from time import sleep
 
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
@@ -66,11 +67,19 @@ class ReceiverServiceImpl(ReceiverService):
 
     def __recvFixedLength(self, clientSocketObject, length):
         data = b''
-        while len(data) < length:
-            chunk = clientSocketObject.recv(length - len(data))
-            if not chunk:
-                raise ConnectionError("Socket connection lost")
-            data += chunk
+        remaining = length
+        startTime = time.time()
+        while remaining > 0:
+            try:
+                chunk = clientSocketObject.recv(remaining)
+                if not chunk:
+                    raise ConnectionError("Socket connection lost")
+                data += chunk
+                remaining -= len(chunk)
+            except ssl.SSLWantReadError:
+                if time.time() - startTime > 30:
+                    raise TimeoutError("SSL read timed out")
+                continue
         return data
 
     def requestToReceiveClient(self):
