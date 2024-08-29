@@ -68,7 +68,7 @@ class ReceiverServiceImpl(ReceiverService):
     def __recvFixedLength(self, clientSocketObject, length):
         data = b''
         remaining = length
-        startTime = time.time()
+
         while remaining > 0:
             try:
                 chunk = clientSocketObject.recv(remaining)
@@ -77,8 +77,6 @@ class ReceiverServiceImpl(ReceiverService):
                 data += chunk
                 remaining -= len(chunk)
             except ssl.SSLWantReadError:
-                if time.time() - startTime > 30:
-                    raise TimeoutError("SSL read timed out")
                 continue
         return data
 
