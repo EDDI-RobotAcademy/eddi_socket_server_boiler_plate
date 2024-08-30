@@ -40,6 +40,10 @@ class ServerSocketRepositoryImpl(ServerSocketRepository):
         socketObject = self.__serverSocket.getServerSocket()
         socketObject.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+    def keepAlive(self):
+        socketObject = self.__serverSocket.getServerSocket()
+        socketObject.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+
     def addressBind(self):
         socketObject = self.__serverSocket.getServerSocket()
         host = self.__serverSocket.getHost()
