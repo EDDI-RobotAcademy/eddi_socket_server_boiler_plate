@@ -15,6 +15,10 @@ class ServerSocketRepository(ABC):
         pass
 
     @abstractmethod
+    def keepAlive(self):
+        pass
+
+    @abstractmethod
     def addressBind(self):
         pass
 

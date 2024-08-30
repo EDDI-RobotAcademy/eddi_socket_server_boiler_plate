@@ -47,6 +47,9 @@ class ServerSocketServiceImpl(ServerSocketService):
     def easyToReuseSocket(self):
         self.__serverSocketRepository.reuseSocket()
 
+    def tcpKeepAlive(self):
+        self.__serverSocketRepository.keepAlive()
+
     # def startServerSocket(self, queueList, pid):
     def prepareServerSocket(self):
         ColorPrinter.print_important_data("socket server started", f"{dt.now()}")
@@ -56,6 +59,8 @@ class ServerSocketServiceImpl(ServerSocketService):
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serverSocketObject:
             self.easyToReuseSocket()
+            # TODO: KEEP_ALIVE
+            self.tcpKeepAlive()
 
             try:
                 self.__serverSocketRepository.addressBind()
