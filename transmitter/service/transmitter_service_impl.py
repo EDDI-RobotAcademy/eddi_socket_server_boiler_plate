@@ -13,6 +13,8 @@ from transmitter.repository.transmitter_repository_impl import TransmitterReposi
 from transmitter.service.transmitter_service import TransmitterService
 from utility.color_print import ColorPrinter
 
+from template.include.socket_server.request_generator.packet_length_request import PacketLengthRequest
+
 
 class TransmitterServiceImpl(TransmitterService):
     __instance = None
@@ -64,6 +66,18 @@ class TransmitterServiceImpl(TransmitterService):
         rollDiceRequest = RequestGenerator.generate(DefaultProtocolNumber.ROLL_DICE)
         return rollDiceRequest.toDictionary()
 
+    def __transmitInChunks(self, clientSocketObject, data, chunkSize=4096):
+        total_length = len(data)
+        sent_length = 0
+
+        while sent_length < total_length:
+            chunk = data[sent_length:sent_length + chunkSize]
+            clientSocketObject.sendall(chunk.encode('utf-8'))
+            sent_length += len(chunk)
+            ColorPrinter.print_important_data("송신한 청크 길이", len(chunk))
+
+        ColorPrinter.print_important_message("모든 청크 전송 완료")
+
     def requestToTransmitClient(self):
         ColorPrinter.print_important_message("Transmitter 구동 시작!")
 
@@ -93,9 +107,21 @@ class TransmitterServiceImpl(TransmitterService):
                     requestCommandData = json.dumps(commandData)
                     count += 1
 
-                ColorPrinter.print_important_data("송신 할 정보", f"{requestCommandData}")
+                utf8EncodedRequestCommandData = requestCommandData.encode('utf-8')
+                ColorPrinter.print_important_data("송신 할 정보", f"{utf8EncodedRequestCommandData}")
+
+                packetLength = len(utf8EncodedRequestCommandData)
+                nonEncodedRequestCommandData = len(requestCommandData)
+                ColorPrinter.print_important_data("인코딩하지 않은 패킷 길이", nonEncodedRequestCommandData)
+                ColorPrinter.print_important_data("전체 패킷 길이", packetLength)
+
+                # 일관성 유지를 위해 PacketLengthResponse를 구성하도록 만든다.
+                packetLengthRequest = PacketLengthRequest(packetLength)
+                dictionarizedPacketLengthResponse = packetLengthRequest.toFixedSizeDictionary()
+                serializedPacketLengthData = json.dumps(dictionarizedPacketLengthResponse, ensure_ascii=False)
 
                 with self.__transmitterLock:
+                    self.__transmitterRepository.transmit(clientSocketObject, serializedPacketLengthData)
                     self.__transmitterRepository.transmit(clientSocketObject, requestCommandData)
 
             except socket.error as socketException:
