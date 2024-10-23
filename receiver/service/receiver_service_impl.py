@@ -1,3 +1,5 @@
+import asyncio
+import concurrent
 import json
 import select
 import socket
@@ -6,9 +8,12 @@ import threading
 import time
 from time import sleep
 
+import requests
+
 from acceptor.repository.socket_accept_repository_impl import SocketAcceptRepositoryImpl
 from channel_selector.selector import ChannelSelector
 from critical_section.manager import CriticalSectionManager
+from http_api.django_http_client import DjangoHttpClient
 from lock_manager.socket_lock_manager import SocketLockManager
 from receiver.repository.receiver_repository_impl import ReceiverRepositoryImpl
 from receiver.service.receiver_service import ReceiverService
@@ -80,6 +85,14 @@ class ReceiverServiceImpl(ReceiverService):
                 continue
         return data
 
+    def sendRequestToDjango(self, receivedJson, url):
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(asyncio.run, DjangoHttpClient.post(url, receivedJson))
+            try:
+                result = future.result()
+            except Exception as e:
+                ColorPrinter.print_important_data("Error in sending request to Django", str(e))
+
     def requestToReceiveClient(self):
         ColorPrinter.print_important_message("Receiver 구동 시작!")
 
@@ -132,17 +145,13 @@ class ReceiverServiceImpl(ReceiverService):
                 decodedReceiveData = receivedData.decode()
                 ColorPrinter.print_important_data("수신 정보", f"{decodedReceiveData}")
 
-                # # TODO: 추후 사용하는 IPC에 따라 선별적으로 선택 할 수 있도록 재구성이 필요함
-                # if userDefinedReceiverFastAPIChannel is not None:
-                #     ColorPrinter.print_important_message("UserDefined 정보 Receiver Channel에 데이터 설정")
-                #     userDefinedReceiverFastAPIChannel.put(decodedReceiveData)
-                #     continue
-                #
-                # # TODO: 아마도 나중에 여기서 어떤 정보들을 요청하느냐에 따라 추가적인 관리가 필요할 것임
-                # # 이제 여기서 FastAPI가 결과를 유지하고 있도록 Queue에 저장해둡니다.
-                # if ipcReceiverFastAPIChannel is not None:
-                #     ColorPrinter.print_important_message("FastAPI Receiver Channel에 데이터 설정")
-                #     ipcReceiverFastAPIChannel.put(decodedReceiveData)
+                receivedJson = json.loads(decodedReceiveData)
+                if receivedJson.get("tag") == "conditional-custom-executor":
+                    tagUrl = receivedJson.get("tag")
+                    thread = threading.Thread(target=self.sendRequestToDjango, args=(receivedJson, tagUrl,))
+                    thread.start()
+
+                    continue
 
                 # TODO: 사실 좀 더 개선하는 것이 좋음 (추후 확장성을 고려한다면)
                 isItUserDefinedChannel = ChannelSelector.findUserDefinedReceiverChannel(decodedReceiveData)
