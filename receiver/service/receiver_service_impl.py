@@ -146,11 +146,10 @@ class ReceiverServiceImpl(ReceiverService):
                 ColorPrinter.print_important_data("수신 정보", f"{decodedReceiveData}")
 
                 receivedJson = json.loads(decodedReceiveData)
-                if receivedJson.get("tag") == "conditional-custom-executor":
+                if "tag" in receivedJson:
                     tagUrl = receivedJson.get("tag")
                     thread = threading.Thread(target=self.sendRequestToDjango, args=(receivedJson, tagUrl,))
                     thread.start()
-
                     continue
 
                 # TODO: 사실 좀 더 개선하는 것이 좋음 (추후 확장성을 고려한다면)
