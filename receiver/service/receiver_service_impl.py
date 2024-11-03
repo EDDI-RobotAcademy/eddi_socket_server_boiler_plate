@@ -85,13 +85,17 @@ class ReceiverServiceImpl(ReceiverService):
                 continue
         return data
 
-    def sendRequestToDjango(self, receivedJson, url):
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(asyncio.run, DjangoHttpClient.post(url, receivedJson))
-            try:
-                result = future.result()
-            except Exception as e:
-                ColorPrinter.print_important_data("Error in sending request to Django", str(e))
+    def sendRequestToDjango(self, receivedJson, url, loop):
+        async def post_request():
+            return await DjangoHttpClient.post(url, receivedJson)
+
+        try:
+            # 전달된 루프에서 코루틴을 실행
+            future = asyncio.run_coroutine_threadsafe(post_request(), loop)
+            result = future.result()  # 동기적으로 결과 기다림
+            return result
+        except Exception as e:
+            ColorPrinter.print_important_data("Error in sending request to Django", str(e))
 
     def requestToReceiveClient(self):
         ColorPrinter.print_important_message("Receiver 구동 시작!")
@@ -99,6 +103,9 @@ class ReceiverServiceImpl(ReceiverService):
         ipcReceiverFastAPIChannel = self.__receiverRepository.getReceiverFastAPIChannel()
         userDefinedReceiverFastAPIChannel = self.__receiverRepository.getUserDefinedReceiverFastAPIChannel()
         clientSocketObject = None
+
+        loop = asyncio.new_event_loop()
+        threading.Thread(target=loop.run_forever, daemon=True).start()
 
         while True:
             clientSocket = self.__criticalSectionManager.getClientSocket()
@@ -148,8 +155,10 @@ class ReceiverServiceImpl(ReceiverService):
                 receivedJson = json.loads(decodedReceiveData)
                 if "tag" in receivedJson:
                     tagUrl = receivedJson.get("tag")
-                    thread = threading.Thread(target=self.sendRequestToDjango, args=(receivedJson, tagUrl,))
+                    thread = threading.Thread(target=self.sendRequestToDjango, args=(receivedJson, tagUrl, loop,))
                     thread.start()
+                    thread.join()
+
                     continue
 
                 # TODO: 사실 좀 더 개선하는 것이 좋음 (추후 확장성을 고려한다면)
